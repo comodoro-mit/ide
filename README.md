@@ -1,4 +1,4 @@
-### Documentación de Transición - IDE Comodoro
+### Documentación - IDE Comodoro
 
 Inicio del proyecto de transición: **agosto 2026**
 
@@ -10,9 +10,9 @@ Inicio del proyecto de transición: **agosto 2026**
 - **[04-tecnico/](04-tecnico/)** — Detalles técnicos de migración, testing y rollback
 - **[05-progreso/](05-progreso/)** — Changelog y lecciones aprendidas (se actualiza regularmente)
 
-### ADR
+### Architecture Decision Record
 
-Un **Architecture Decision Record** es un documento que registra una decisión arquitectónica importante:
+Documento que registra una decisión arquitectónica importante:
 - **Por qué** se tomó (contexto y constraints)
 - **Qué** se decidió
 - **Cuáles fueron** las consecuencias y alternativas descartadas
@@ -21,14 +21,14 @@ Cada ADR es un archivo independiente en `02-decisiones/`. Ver [[ADR-001-maestro-
 
 ### Cómo usar esta documentación
 
-1. **Lee primero** `01-contexto/problema.md` y `01-contexto/objetivos.md`
-2. **Consulta los ADRs** en `02-decisiones/` cuando necesites saber el "por qué" de una decisión
-3. **Sigue el progreso** en `05-progreso/changelog.md`
-4. **Revisa riesgos** en `03-proceso/riesgos.md` antes de cada fase
-5. **Consulta lo técnico** en `04-tecnico/` para detalles de implementación
+1. **Leer primero** `01-contexto/problema.md` y `01-contexto/objetivos.md`
+2. **Consultar los ADR** en `02-decisiones/` cuando necesites saber el "por qué" de una decisión
+3. **Seguir el progreso** en `05-progreso/changelog.md`
+4. **Revisar riesgos** en `03-proceso/riesgos.md` antes de cada fase
+5. **Consultar lo técnico** en `04-tecnico/` para detalles de implementación
 
 ### Mantenimiento
 
 - Cada ADR aprobado se commitea con un mensaje claro
 - El CHANGELOG se actualiza en cada hito completado
-- Las decisiones que cambian se marcan como "Depreciadas" con referencia al ADR que las reemplaza
+- Las decisiones que cambian se marcan como "depreciadas" con referencia al ADR que las reemplaza
