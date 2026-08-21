@@ -1,0 +1,41 @@
+# Derivados (generados por CI, no commitear)
+*.geojson
+*_data.js
+layers_*.tar.gz
+dist/
+
+# Build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*~
+*.egg-info/
+build/
+dist/
+
+# Editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# CI logs
+logs/
+*.log
+
+# Temporal
+tmp/
+temp/
+.cache/
+
+# OS
+Thumbs.db
+
+# GDAL/GIS temporary
+*.lock
+*.tmp
+
+# Test outputs
+test_report.txt
+monthly-test-report/

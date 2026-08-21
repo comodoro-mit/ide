@@ -1,0 +1,28 @@
+# Normalizar saltos de línea en todos los archivos de texto
+* text=auto
+
+# Archivos específicos con LF (Unix)
+*.md text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+
+# Archivos binarios
+*.gpkg binary
+*.geojson binary
+*.zip binary
+*.tar.gz binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+
+# Git
+.gitignore text eol=lf
+.gitattributes text eol=lf
