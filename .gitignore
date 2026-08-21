@@ -28,6 +28,7 @@ logs/
 tmp/
 temp/
 .cache/
+propuesta/
 
 # OS
 Thumbs.db
