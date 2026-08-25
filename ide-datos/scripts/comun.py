@@ -36,6 +36,24 @@ TEMAS = {
     "urb": "structure",
 }
 
+# Same keys, the label people read. nomenclatura.md section 3.
+NOMBRES_TEMA = {
+    "adm": "Límites y administración",
+    "amb": "Ambiente y espacios verdes",
+    "cat": "Catastro y parcelario",
+    "cen": "Censo y demografía",
+    "edu": "Educación",
+    "equ": "Equipamiento comunitario",
+    "hid": "Hidrografía",
+    "inf": "Infraestructura y servicios",
+    "pla": "Planeamiento urbano",
+    "rie": "Riesgo y emergencias",
+    "sal": "Salud",
+    "top": "Topografía y relieve",
+    "tra": "Transporte y movilidad",
+    "urb": "Trama urbana",
+}
+
 CRS_MAESTRO = 5344  # POSGAR 2007 / Argentina zone 2
 CRS_PUBLICACION = 4326  # WGS 84, required by RFC 7946 for GeoJSON
 
