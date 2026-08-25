@@ -35,6 +35,9 @@ jobs:
       - name: Derivar catálogo completo
         run: python ide-datos/scripts/derivar_catalogo.py
 
+      - name: Generar derivados
+        run: python ide-datos/scripts/generar_derivados.py
+
       - name: Publicar catálogo derivado como artefacto
         uses: actions/upload-artifact@v4
         with:

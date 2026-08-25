@@ -1,0 +1,73 @@
+name: Publicar sitio y datos
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ide-datos/**'
+      - '.github/workflows/publicar.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Deja terminar un despliegue en curso antes de empezar otro.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # Arma la carpeta del sitio. No sabe nada del host: produce estáticos y los
+  # sube como artefacto. Este job no cambia si mañana se migra a Cloudflare.
+  armar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # fecha_modificacion sale de git log, un clon shallow la falsea.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # ogr2ogr no es necesario: generar_derivados.py cae a su motor en
+      # Python puro. Instalarlo igual, porque es el motor de referencia.
+      - name: Instalar GDAL
+        run: sudo apt-get update && sudo apt-get install -y gdal-bin
+
+      # Si el catálogo o algún maestro no cumple nomenclatura, no se publica.
+      - name: Validar
+        run: python ide-datos/scripts/validar_catalogo.py
+
+      - name: Derivar catálogo
+        run: python ide-datos/scripts/derivar_catalogo.py
+        env:
+          IDE_URL_BASE: ${{ vars.IDE_URL_BASE }}
+
+      - name: Generar GeoJSON
+        run: python ide-datos/scripts/generar_derivados.py
+
+      - name: Armar sitio
+        run: python ide-datos/scripts/armar_sitio.py
+        env:
+          IDE_URL_BASE: ${{ vars.IDE_URL_BASE }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: sitio
+
+  # Único job atado al host. Para migrar a Cloudflare Pages se reemplaza por
+  # cloudflare/wrangler-action apuntando a la misma carpeta sitio/; el job
+  # armar queda intacto.
+  desplegar:
+    needs: armar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v4
