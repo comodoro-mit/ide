@@ -12,6 +12,7 @@ Result:
     sitio/
       index.html                  the geoportal template, filled in
       estilos.css, app.js         copied from ide-visores/geoportal/
+      img/*.png                   logo and favicon, same origin
       catalogo.csv, catalogo.json the full catalogue
       datos/<id>.gpkg             the master, for QGIS and ArcGIS
       datos/<id>.geojson          for web viewers and everything else
@@ -92,9 +93,22 @@ def copiar(origen, destino):
 # JavaScript disabled and search engines can index it; and the design is edited
 # as a real file that opens in a browser, not as a string inside Python.
 
+# Header and footer live in geoportal/partes/ so every future subpage can
+# reuse them: edit the partial, not each page.
+PARTES = {
+    "<!--{{ENCABEZADO}}-->": "header.html",
+    "<!--{{PIE}}-->": "footer.html",
+}
+
 MARCA_INICIO = "<!--{{FICHAS_INICIO}}-->"
 MARCA_FIN = "<!--{{FICHAS_FIN}}-->"
-ARCHIVOS_GEOPORTAL = ("estilos.css", "app.js")
+ARCHIVOS_GEOPORTAL = (
+    "estilos.css",
+    "app.js",
+    "img/logotipo.png",
+    "img/logotipo_icono.png",
+    "img/hero_background.png",
+)
 
 
 def ruta_geoportal():
@@ -115,13 +129,12 @@ def ficha_html(fila):
         f'<a href="{ruta}"{" download" if bajar else ""}>{texto}</a>'
         for ruta, texto, bajar in descargas
     )
+
     return f"""    <article class="ficha">
-      <h2>
-        <span class="titulo">{campo('titulo')}</span>
-        <span class="etiqueta">{campo('tema')}</span>
-      </h2>
+      <h2><span class="titulo">{campo('titulo')}</span></h2>
       <p class="descripcion">{campo('descripcion')}</p>
       <dl>
+        <dt>Tema</dt><dd>{html.escape(comun.NOMBRES_TEMA.get(fila.get("tema", ""), ""))}</dd>
         <dt>Identificador</dt><dd><code>{did}</code></dd>
         <dt>Registros</dt><dd>{campo('cantidad_registros')}</dd>
         <dt>Geometría</dt><dd>{campo('tipo_geometria')}</dd>
@@ -146,6 +159,15 @@ def escribir_indice(filas, salida, fecha):
         )
 
     documento = plantilla.read_text(encoding="utf-8")
+
+    for marca, archivo in PARTES.items():
+        if marca not in documento:
+            continue
+        parte = ruta_geoportal() / "partes" / archivo
+        if not parte.exists():
+            raise FileNotFoundError(f"falta la parte {parte}")
+        documento = documento.replace(marca, parte.read_text(encoding="utf-8").strip())
+
     for marca in (MARCA_INICIO, MARCA_FIN):
         if marca not in documento:
             raise ValueError(f"la plantilla no tiene el marcador {marca}")
@@ -157,10 +179,6 @@ def escribir_indice(filas, salida, fecha):
 
     cantidad = len(filas)
     documento = documento.replace("{{CANTIDAD}}", str(cantidad))
-    documento = documento.replace(
-        "{{PLURAL}}",
-        "conjunto de datos" if cantidad == 1 else "conjuntos de datos",
-    )
     documento = documento.replace("{{FECHA}}", fecha)
 
     (salida / "index.html").write_text(documento, encoding="utf-8")
