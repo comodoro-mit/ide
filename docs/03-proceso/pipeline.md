@@ -77,6 +77,8 @@ catalogo(adm): register cr-adm-limites-barrios
 - [x] ADR-003 corregido: el tope de GitHub Pages es 100 GB/mes, no 1 GB
 - [x] `scripts/creador_metadata.py` — ISO 19139 según el perfil IDERA v2.0
 - [x] `ide-visores/geoportal/` — página principal en tres archivos separados
+- [x] Pages activado y `publicar.yml` corrigiendo: la URL la aporta GitHub vía
+      `actions/configure-pages`, no está escrita a mano en ningún archivo
 
 ### Primer dataset: pasa la validación, 0 errores y 3 avisos
 
@@ -93,10 +95,8 @@ catalogo(adm): register cr-adm-limites-barrios
 
 ### Falta construir
 
-- [ ] **Pushear y activar Pages.** Es lo que desbloquea todo lo demás: da la
-      URL (`https://comodoro-mit.github.io/ide/`), con eso se llena `url_base`,
-      y el elemento C1 de IDERA queda completo. Además es la primera vez que
-      correría `validar.yml` de verdad.
+- [ ] **Completar `frecuencia_actualizacion`** para que el metadato llegue a
+      17/17. Es lo único que le falta al elemento A8; C1 ya se resuelve solo.
 - [ ] **Los visores de mapa** en `ide-visores/src/`. La página principal ya está.
 - [ ] **Confirmar con IDERA** cómo se incorpora el nodo: el XML ya cumple el
       perfil v2.0, falta saber si cosechan por CSW o alcanza con publicarlo.
@@ -128,6 +128,15 @@ suponía dos repositorios. Con un solo repo, GitHub Actions solo lee la carpeta
 de la raíz. No es una limitación: cada workflow filtra por `paths:` y corre solo
 cuando cambia lo suyo. Conviene borrar `ide-datos/.github/` e
 `ide-visores/.github/` para que nadie deje un `.yml` ahí esperando que corra.
+
+**La URL del sitio no se escribe a mano.** `actions/configure-pages` devuelve
+`steps.pages.outputs.base_url`, que es la URL real de Pages —sirve igual para
+`comodoro-mit.github.io/ide` que para un dominio propio configurado en
+Settings > Pages—. `publicar.yml` la pasa como `IDE_URL_BASE` a los pasos que
+la necesitan. Ojo: va en el `env:` **de cada paso**, nunca en el del job: el
+contexto `steps` no existe cuando se evalúa el `env:` de un job y saldría
+vacío. `config.json` y `vars.IDE_URL_BASE` quedan de respaldo para corridas
+locales o para publicar fuera de GitHub Pages.
 
 **Errores vs. avisos.** El CI frena solo ante errores. Los avisos quedan
 visibles sin bloquear: la idea es que el primer dataset entre y la calidad del
