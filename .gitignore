@@ -40,3 +40,7 @@ Thumbs.db
 # Test outputs
 test_report.txt
 monthly-test-report/
+
+# Catalogo derivado (lo regenera derivar_catalogo.py, ADR-002)
+ide-datos/catalogo/catalogo_completo.csv
+ide-datos/catalogo/catalogo_completo.json

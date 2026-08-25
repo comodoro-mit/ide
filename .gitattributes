@@ -26,3 +26,6 @@
 # Git
 .gitignore text eol=lf
 .gitattributes text eol=lf
+
+# Metadatos QGIS (sidecar del .gpkg, se versiona a mano)
+*.qmd text eol=lf
