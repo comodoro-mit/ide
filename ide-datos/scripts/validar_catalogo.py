@@ -114,6 +114,20 @@ def validar_fila(fila, numero, estados, rep):
             f"version '{version}' no es SemVer MAJOR.MINOR.PATCH (¿'{version}.0.0'?)",
         )
 
+    frecuencia = fila.get("frecuencia_actualizacion", "")
+    if not frecuencia:
+        rep.aviso(
+            ambito,
+            "sin frecuencia_actualizacion: es el elemento A8 del perfil IDERA y "
+            "es obligatorio para publicar el metadato ISO 19139",
+        )
+    elif frecuencia not in comun.FRECUENCIAS:
+        rep.aviso(
+            ambito,
+            f"frecuencia_actualizacion '{frecuencia}' no es un valor de "
+            f"MD_MaintenanceFrequencyCode ({', '.join(comun.FRECUENCIAS)})",
+        )
+
     responsable = fila.get("responsable", "")
     if responsable and (
         responsable != responsable.lower() or tiene_acentos(responsable)

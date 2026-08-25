@@ -7,6 +7,7 @@ scripts runnable with `py -3` on Windows and on a bare CI runner.
 
 import csv
 import hashlib
+import json
 import math
 import os
 import re
@@ -38,6 +39,23 @@ TEMAS = {
 CRS_MAESTRO = 5344  # POSGAR 2007 / Argentina zone 2
 CRS_PUBLICACION = 4326  # WGS 84, required by RFC 7946 for GeoJSON
 
+# The same projection as EPSG:5344, stated without a datum.
+#
+# Asking PROJ (and therefore ogr2ogr) to go from the EPSG code to EPSG:4326
+# makes it insert the registered "POSGAR 2007 to WGS 84 (2)" transformation,
+# which shifts every coordinate about 0.66 m north and 0.20 m east while
+# declaring its own accuracy as 0.5 m. POSGAR 2007 uses the WGS 84 ellipsoid
+# and both realizations are ITRF-based, so treating them as equivalent is the
+# usual practice for web publication and is what our pure-Python path does.
+#
+# Using this as the source keeps ogr2ogr and the python engine bit-identical.
+# If IGN ever asks for the registered transformation, drop this and apply it in
+# BOTH engines, never in one.
+PROJ4_MAESTRO = (
+    "+proj=tmerc +lat_0=-90 +lon_0=-69 +k=1 +x_0=2500000 +y_0=0 "
+    "+ellps=WGS84 +units=m +no_defs"
+)
+
 # Section 2: cr-<tema>-<entidad>[-<calificador>], max 50 chars, immutable.
 RE_ID = re.compile(r"^cr-(" + "|".join(TEMAS) + r")-[a-z0-9]+(-[a-z0-9]+)*$")
 LARGO_MAX_ID = 50
@@ -63,9 +81,30 @@ COLUMNAS_MANUALES = [
     "estado",
     "categoria",
     "version",
+    # IDERA element A8 (maintenance frequency) is mandatory and the QGIS .qmd
+    # schema has no field for it, so it has to live in the catalogue. Optional
+    # for now so existing rows keep validating; creador_metadata.py reports it
+    # as a compliance gap until it is filled.
+    "frecuencia_actualizacion",
     "notas_internas",
 ]
-COLUMNAS_OPCIONALES = {"notas_internas"}
+COLUMNAS_OPCIONALES = {"notas_internas", "frecuencia_actualizacion"}
+
+# ISO 19115 MD_MaintenanceFrequencyCode.
+FRECUENCIAS = [
+    "continual",
+    "daily",
+    "weekly",
+    "fortnightly",
+    "monthly",
+    "quarterly",
+    "biannually",
+    "annually",
+    "asNeeded",
+    "irregular",
+    "notPlanned",
+    "unknown",
+]
 
 
 # --- paths -----------------------------------------------------------------
@@ -80,8 +119,60 @@ def ruta_catalogo():
     return raiz_datos() / "catalogo" / "catalogo.csv"
 
 
+def ruta_config():
+    return raiz_datos() / "config.json"
+
+
+def leer_config():
+    """Read ide-datos/config.json. Missing file means every default applies."""
+    ruta = ruta_config()
+    if not ruta.exists():
+        return {}
+    with open(ruta, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def url_base():
+    """Public base URL of the published site, without a trailing slash.
+
+    Empty until somebody decides where the site lives. While it is empty the
+    catalogue simply omits url_descarga and url_metadatos instead of inventing
+    a hostname that would then circulate inside published metadata.
+    The environment variable wins so CI can override it per deployment.
+    """
+    valor = os.environ.get("IDE_URL_BASE") or leer_config().get("url_base", "")
+    return valor.rstrip("/")
+
+
 def ruta_maestro(dataset_id, tema, extension):
     return raiz_datos() / "maestros" / tema / f"{dataset_id}.{extension}"
+
+
+# Layout of the published site. derivar_catalogo.py builds the URLs and
+# armar_sitio.py writes the files, both from here, so they cannot drift apart.
+CARPETA_DATOS = "datos"
+CARPETA_METADATOS = "metadatos"
+
+
+def urls_publicacion(dataset_id):
+    """Public URLs for one dataset. The keys always exist; the values are
+    empty strings while url_base is undefined, so consumers of the catalogue
+    see a stable shape either way."""
+    base = url_base()
+    if not base:
+        return {
+            "url_descarga": "",
+            "url_descarga_geojson": "",
+            "url_metadatos": "",
+        }
+    return {
+        "url_descarga": f"{base}/{CARPETA_DATOS}/{dataset_id}.gpkg",
+        "url_descarga_geojson": f"{base}/{CARPETA_DATOS}/{dataset_id}.geojson",
+        # The ISO 19139 XML, not the .qmd: this is the URL a catalogue harvester
+        # follows, and the .qmd is a QGIS working file, not an interchange
+        # format. Both get published; only this one is advertised.
+        "url_metadatos": f"{base}/{CARPETA_METADATOS}/{dataset_id}.xml",
+    }
 
 
 def tema_de(dataset_id):
@@ -324,19 +415,32 @@ _X0 = 2500000.0
 _Y0 = 0.0
 
 
+# Coefficient of phi in the meridian arc series, reused to get mu.
+_M_LINEAL = 1 - _E2 / 4 - 3 * _E2**2 / 64 - 5 * _E2**3 / 256 - 175 * _E2**4 / 16384
+
+
 def _arco_meridiano(phi):
+    """Meridional arc distance from the equator to phi.
+
+    Carried to e^8. Snyder prints the series to e^6, which is already accurate
+    to 0.1 mm over this zone; e^8 brings it to 0.002 mm. Both are far below any
+    meaningful threshold — the extra term is kept only because it is free.
+    """
     return _A * (
-        (1 - _E2 / 4 - 3 * _E2**2 / 64 - 5 * _E2**3 / 256) * phi
-        - (3 * _E2 / 8 + 3 * _E2**2 / 32 + 45 * _E2**3 / 1024) * math.sin(2 * phi)
-        + (15 * _E2**2 / 256 + 45 * _E2**3 / 1024) * math.sin(4 * phi)
-        - (35 * _E2**3 / 3072) * math.sin(6 * phi)
+        _M_LINEAL * phi
+        - (3 * _E2 / 8 + 3 * _E2**2 / 32 + 45 * _E2**3 / 1024 + 105 * _E2**4 / 4096)
+        * math.sin(2 * phi)
+        + (15 * _E2**2 / 256 + 45 * _E2**3 / 1024 + 525 * _E2**4 / 16384)
+        * math.sin(4 * phi)
+        - (35 * _E2**3 / 3072 + 175 * _E2**4 / 12288) * math.sin(6 * phi)
+        + (315 * _E2**4 / 131072) * math.sin(8 * phi)
     )
 
 
 def a_wgs84(este, norte):
     """Project one EPSG:5344 coordinate to (lon, lat) in EPSG:4326."""
     m = _arco_meridiano(_LAT0) + (norte - _Y0) / _K0
-    mu = m / (_A * (1 - _E2 / 4 - 3 * _E2**2 / 64 - 5 * _E2**3 / 256))
+    mu = m / (_A * _M_LINEAL)
     e1 = (1 - math.sqrt(1 - _E2)) / (1 + math.sqrt(1 - _E2))
     phi1 = (
         mu

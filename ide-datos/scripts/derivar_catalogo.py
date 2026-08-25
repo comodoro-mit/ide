@@ -45,6 +45,10 @@ COLUMNAS_DERIVADAS = [
     "tamano_bytes",
     "checksum_sha256",
     "fecha_modificacion",
+    # Empty until config.json (or IDE_URL_BASE) says where the site lives.
+    "url_descarga",
+    "url_descarga_geojson",
+    "url_metadatos",
 ]
 
 
@@ -92,6 +96,7 @@ def derivar(fila):
         "checksum_sha256": comun.checksum_sha256(gpkg),
         "fecha_modificacion": comun.fecha_git(gpkg),
     }
+    derivado.update(comun.urls_publicacion(did))
     return derivado, None
 
 
