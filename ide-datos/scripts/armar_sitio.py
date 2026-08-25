@@ -210,9 +210,20 @@ def main():
                 f"{comun.CARPETA_METADATOS}/{did}.xml",
             ),
         ]
+        # Cada pieza faltante nombra el script que la produce: el mensaje
+        # aparece en un log de CI, donde no hay nadie para deducirlo.
+        productor = {
+            ".gpkg": "es el maestro, tiene que estar en maestros/",
+            ".qmd": "es el sidecar del maestro, tiene que estar en maestros/",
+            ".geojson": "lo genera generar_derivados.py",
+            ".xml": "lo genera creador_metadata.py",
+        }
         for origen, relativo in piezas:
             if not origen.exists():
-                faltantes.append(f"{did}: falta {origen.name}")
+                pista = productor.get(origen.suffix, "")
+                faltantes.append(
+                    f"{did}: falta {origen.name}" + (f" — {pista}" if pista else "")
+                )
                 continue
             tamano = copiar(origen, salida / relativo)
             total += tamano
