@@ -1,0 +1,15 @@
+prefijo,nombre,categoria_iso
+adm,Límites y administración,boundaries
+amb,Ambiente y espacios verdes,environment
+cat,Catastro y parcelario,planningCadastre
+cen,Censo y demografía,society
+edu,Educación,society
+equ,Equipamiento comunitario,structure
+hid,Hidrografía,inlandWaters
+inf,Infraestructura y servicios,utilitiesCommunication
+pla,Planeamiento urbano,planningCadastre
+rie,Riesgo y emergencias,geoscientificInformation
+sal,Salud,health
+top,Topografía y relieve,elevation
+tra,Transporte y movilidad,transportation
+urb,Trama urbana,structure

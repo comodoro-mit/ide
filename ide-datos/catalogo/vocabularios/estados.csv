@@ -1,0 +1,6 @@
+valor,descripcion
+borrador,En carga o normalización. No se publica.
+en_revision,Cargado y a la espera de control de calidad.
+publicado,Aprobado y disponible en el geoportal.
+desactualizado,Venció su fecha de próxima revisión.
+retirado,Dado de baja. Se conserva el histórico pero no se publica.
