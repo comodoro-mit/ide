@@ -1,0 +1,13 @@
+valor,descripcion
+continual,Se actualiza de forma continua.
+daily,Diaria.
+weekly,Semanal.
+fortnightly,Quincenal.
+monthly,Mensual.
+quarterly,Trimestral.
+biannually,Semestral.
+annually,Anual.
+asNeeded,Cuando hace falta. No tiene periodicidad fija.
+irregular,Irregular. Se actualiza esporadicamente.
+notPlanned,No esta previsto actualizarla.
+unknown,Se desconoce.
