@@ -1,9 +1,9 @@
-# Pipeline de datos: qué existe y qué falta
+# Pipeline de datos
 
-Estado al 2026-08-24. Este archivo es el mapa de la automatización: qué hace
-cada pieza, en qué orden corre, y qué falta construir.
+Estado al 2026-08-24. Mapa de la automatización: qué corre, en qué orden, qué
+falta.
 
-## El circuito completo
+## El circuito
 
 ```
 QGIS (normalizar)                    ← humano
@@ -16,145 +16,119 @@ validar_catalogo.py                  ← CI, frena el merge si algo no cumple
   ↓
 derivar_catalogo.py                  ← CI, agrega 21 columnas leídas del dato
   ↓
-catalogo_completo.{csv,json}         ← derivado, NO se commitea
+generar_derivados.py                 ← CI, GeoJSON 4326
   ↓
-generar_derivados.py                 ← CI, GeoJSON 4326 / PMTiles      [FALTA]
+creador_metadata.py                  ← CI, ISO 19139 XML para IDERA
   ↓
-creador_metadata.py                  ← CI, ISO 19139 para IDERA        [FALTA]
+armar_sitio.py                       ← CI, arma sitio/ (agnóstico del host)
   ↓
-ide-visores/ + geoportal             ← publicación                     [FALTA]
+publicar.yml → GitHub Pages          ← CI. Cloudflare en Fase 3
+
+ide-visores/geoportal/               ← plantilla html+css+js, se edita a mano
+ide-visores/src/visores/             ← FALTA: los visores de mapa
 ```
 
-La regla que ordena todo: **si un script puede regenerarlo, no es dato, es
-caché, y no se commitea** (ADR-002). Solo el `.gpkg`, el `.qmd` y el
-`catalogo.csv` se versionan.
-
-## Checklist
-
-### Hecho
-
-- [x] Estructura de carpetas de `ide-datos/` e `ide-visores/`
-- [x] `catalogo.csv` con la primera capa (`cr-adm-limites-barrios`)
-- [x] Primer maestro cargado: `maestros/adm/cr-adm-limites-barrios.gpkg` + `.qmd`
-- [x] `scripts/comun.py` — módulo compartido, sin dependencias externas
-- [x] `scripts/validar_catalogo.py` — valida nomenclatura, CRS, campos, pareja de archivos
-- [x] `scripts/derivar_catalogo.py` — mergea el CSV manual con lo leído del `.gpkg`/`.qmd`
-- [x] `catalogo/changelog/cr-adm-limites-barrios.md` — primer changelog por dataset
-- [x] `.github/workflows/validar.yml` — corre ambos en cada push y PR
-      (**en la raíz del repositorio**, ver nota abajo)
-- [x] `catalogo/vocabularios/temas.csv` y `estados.csv`
-
-### Estado del primer dataset
-
-`cr-adm-limites-barrios` pasa la validación: **0 errores, 3 avisos**.
-
-- [x] ~~Sacar el campo `fid`~~ — resuelto exportando desde QGIS con la opción
-      **`FID` = `id`**, que cambia la clave primaria de `fid` a `id`. Una vez
-      que `id` es la PK, el `fid` sobrante se borra normalmente desde
-      Propiedades de la capa > Campos. Ver `scripts/README.md`.
-- [x] ~~Vocabulario de `estado`~~: corregido a `publicado` (2026-08-24).
-- [x] ~~`version` a SemVer~~: `1` → `1.0.0` (2026-08-24).
-- [ ] **Recalcular la extensión del `.qmd`** en QGIS: Propiedades > Metadatos >
-      Extensión > "Establecer desde la capa". Hoy guarda un valor centinela.
-- [ ] **Completar `<history>` del `.qmd`** con el linaje: de dónde salió el
-      dato, cómo se normalizó, con qué fecha de captura. Cerrarlo también en
-      `catalogo/changelog/cr-adm-limites-barrios.md`.
-
-### Antes de cargar el resto de las capas
-
-- [ ] Ampliar `descripcion` a 200+ caracteres (la ficha institucional lo pide
-      para que sirva como metadato publicable, no solo como nota interna).
-- [ ] Decidir si `nivel_acceso` y `licencia` entran al `catalogo.csv` o se leen
-      del `.qmd`. Hoy `derivar_catalogo.py` los lee del `.qmd`; funciona, pero
-      significa que el nivel de acceso no es filtrable desde el CSV manual.
-- [ ] Cargar las capas restantes siguiendo la tabla de correspondencia de
-      `nomenclatura.md` §13.
-
-### Falta construir
-
-- [ ] **`generar_derivados.py`** — GeoJSON en EPSG:4326 desde cada maestro
-      (obligatorio por RFC 7946), y PMTiles para las capas pesadas. Es el
-      primer script que necesita GDAL: `ogr2ogr` ya viene con QGIS y en CI se
-      instala con `apt install gdal-bin`.
-- [ ] **`creador_metadata.py`** — reescrito. El original del repo viejo genera
-      metadatos falsos (`topiccategory: boundaries` hardcodeado para toda capa,
-      `geomtype: unknown`, bbox fijo del ejido, y `CRS_EPSG = "EPSG:5344"`
-      definida y nunca escrita). El reemplazo sale del `.qmd` real más las
-      columnas derivadas. **Pendiente de decidir**: si IDERA cosecha vía CSW,
-      hace falta exportar a ISO 19139 XML; el `.qmd` nativo de QGIS no alcanza.
-- [ ] **`publicar.yml`** — workflow de publicación a GitHub Pages (Fase 0–2) y
-      luego a Cloudflare Pages (ADR-003).
-- [ ] **`revisar-vencidos.yml`** — tarea programada que marca
-      `desactualizado` todo dataset cuya `proxima_revision` ya pasó. Requiere
-      que exista la columna `proxima_revision`, que hoy no está en el CSV.
+La regla que lo ordena (ADR-002): **si un script puede regenerarlo, no es dato,
+es caché, y no se commitea.** Solo el `.gpkg`, el `.qmd` y el `catalogo.csv` se
+versionan.
 
 ## Qué se edita a mano y qué no
 
-Esta es la distinción que sostiene todo el circuito. Si se rompe, el catálogo
-vuelve a ser una planilla que hay que mantener sincronizada a mano.
-
-| Archivo | ¿Se edita a mano? | ¿Se commitea? |
+| Archivo | ¿A mano? | ¿Se commitea? |
 |---|---|---|
-| `maestros/<tema>/*.gpkg` | Sí, en QGIS | Sí |
-| `maestros/<tema>/*.qmd` | Sí, en QGIS | Sí |
-| `catalogo/catalogo.csv` | **Sí** — es la única fuente manual | Sí |
-| `catalogo/vocabularios/*.csv` | Sí, por decisión del comité | Sí |
-| `catalogo/catalogo_completo.csv` | **No** | No (`.gitignore`) |
-| `catalogo/catalogo_completo.json` | **No** | No (`.gitignore`) |
+| `maestros/<tema>/*.gpkg` y `*.qmd` | Sí, en QGIS | Sí |
+| `catalogo/catalogo.csv` | **Sí — única fuente manual** | Sí |
+| `catalogo/vocabularios/*.csv` | Sí, por el comité | Sí |
+| `catalogo/catalogo_completo.*` | **No** | No |
+| `derivados/*.geojson` | **No** | No |
+| `sitio/` | **No** | No |
+| `ide-visores/geoportal/*` | **Sí — html, css y js a mano** | Sí |
+| `config.json` | Sí (una línea: `url_base`) | Sí |
 
-Los dos `catalogo_completo.*` los reescribe `derivar_catalogo.py` de cero en
-cada corrida. Cualquier cambio hecho a mano ahí se pierde en el próximo push.
-Si falta o está mal un dato: corregir `catalogo.csv`, el `.qmd` o el `.gpkg`,
-y volver a correr el script.
+Los derivados se reescriben de cero en cada corrida. Un cambio hecho a mano ahí
+se pierde en el próximo push: corregir `catalogo.csv`, el `.qmd` o el `.gpkg`.
 
 ## Convención de commits
 
-Los commits y los push los hace el usuario. Formato de `nomenclatura.md` §8,
-en inglés, breves, sin cuerpo:
+Los commits y push los hace el usuario. Formato de `nomenclatura.md` §8, en
+inglés, breves, sin cuerpo: `<tipo>(<ámbito>): <qué cambió>`, con tipo entre
+`datos`, `catalogo`, `visor`, `ci`, `docs`, `fix`.
 
-```
-<tipo>(<ámbito>): <qué cambió>
-```
-
-Tipos: `datos`, `catalogo`, `visor`, `ci`, `docs`, `fix`.
-
-Un dataset nuevo entra con **dos** commits, no uno: el maestro por un lado y su
-fila del catálogo por el otro, para que el historial muestre por separado
-"llegó el dato" y "se declaró el dato".
+Un dataset nuevo entra con **dos** commits, para que el historial distingue
+"llegó el dato" de "se declaró el dato":
 
 ```
 datos(adm): add cr-adm-limites-barrios master layer
 catalogo(adm): register cr-adm-limites-barrios
 ```
 
-## Decisiones tomadas en esta etapa
+## Checklist
 
-**El catálogo manual se queda en 8 columnas, no 16.** El equipo mantiene a mano
-solo lo que efectivamente sabe; el resto se lee del dato. `derivar_catalogo.py`
-saca 21 columnas más del `.gpkg` y del `.qmd`, incluidos licencia, palabras
-clave y contacto, que ya estaban cargados en el metadato QGIS. No hay que
-inventar nada.
+### Hecho
 
-**Los scripts de validación y derivación no usan GDAL.** Un GeoPackage es
-SQLite: `sqlite3` de la biblioteca estándar lee estructura, extensión y
-registros. Ventaja concreta: corren con `py -3` en cualquier Windows sin
-instalar nada y en un runner de CI pelado, sin minutos gastados en instalar
-GDAL. La reproyección del bbox a 4326 se resuelve con la Transversa de Mercator
-inversa implementada en `comun.py`. GDAL entra recién con
-`generar_derivados.py`, donde sí hay que reproyectar geometrías.
+- [x] Estructura de carpetas, `catalogo.csv`, primer maestro
+- [x] `scripts/comun.py`, `validar_catalogo.py`, `derivar_catalogo.py`
+- [x] `scripts/generar_derivados.py` — GeoJSON 4326, dos motores equivalentes
+- [x] `.github/workflows/validar.yml` (en la raíz del repo, ver abajo)
+- [x] `catalogo/vocabularios/temas.csv` y `estados.csv`
+- [x] `catalogo/changelog/cr-adm-limites-barrios.md`
+- [x] `scripts/armar_sitio.py` + `.github/workflows/publicar.yml`
+- [x] `config.json` con `url_base` configurable
+- [x] ADR-003 corregido: el tope de GitHub Pages es 100 GB/mes, no 1 GB
+- [x] `scripts/creador_metadata.py` — ISO 19139 según el perfil IDERA v2.0
+- [x] `ide-visores/geoportal/` — página principal en tres archivos separados
 
-**Todos los workflows viven en `.github/workflows/` de la raíz.**
+### Primer dataset: pasa la validación, 0 errores y 3 avisos
+
+- [x] ~~Campo `fid`~~ — resuelto exportando desde QGIS con **`FID` = `id`**
+- [x] ~~Vocabulario de `estado`~~ y ~~`version` a SemVer~~
+- [ ] Recalcular la extensión del `.qmd`: Propiedades > Metadatos > Extensión >
+      "Establecer desde la capa". Hoy guarda un valor centinela.
+- [ ] Completar `<history>` del `.qmd` con el linaje: origen del dato, fecha de
+      captura, transformaciones. Cerrarlo también en el changelog del dataset.
+- [ ] Ampliar `descripcion` a 200+ caracteres para que sirva como metadato
+      publicable.
+- [ ] Completar `frecuencia_actualizacion` en `catalogo.csv`. Es el elemento A8
+      de IDERA, obligatorio. Valores en `catalogo/vocabularios/frecuencias.csv`.
+
+### Falta construir
+
+- [ ] **Pushear y activar Pages.** Es lo que desbloquea todo lo demás: da la
+      URL (`https://comodoro-mit.github.io/ide/`), con eso se llena `url_base`,
+      y el elemento C1 de IDERA queda completo. Además es la primera vez que
+      correría `validar.yml` de verdad.
+- [ ] **Los visores de mapa** en `ide-visores/src/`. La página principal ya está.
+- [ ] **Confirmar con IDERA** cómo se incorpora el nodo: el XML ya cumple el
+      perfil v2.0, falta saber si cosechan por CSW o alcanza con publicarlo.
+- [ ] **`revisar-vencidos.yml`** — marca `desactualizado` lo que venció.
+      Requiere una columna `proxima_revision` que hoy no existe.
+- [ ] **PMTiles** — recién cuando haya una capa que lo justifique. Los 83 KB de
+      barrios no lo necesitan.
+
+## Decisiones tomadas
+
+**Catálogo manual de 8 columnas, no 16.** El equipo mantiene solo lo que sabe;
+el resto se lee del dato. Licencia, palabras clave, contacto y organización ya
+estaban en el `.qmd`. No hay que inventar nada.
+
+**Validación y derivación sin GDAL.** Un GeoPackage es SQLite. Corre con `py -3`
+en cualquier Windows sin instalar nada y en un runner de CI pelado, coherente
+con presupuesto cero. `generar_derivados.py` usa GDAL si está, pero produce el
+mismo archivo si no.
+
+**Los dos motores de reproyección dan salida idéntica.** Verificado vértice por
+vértice. Hubo que neutralizar la transformación de datum que PROJ inserta sola
+(corría todo 0,66 m) y unificar la orientación de anillos en una sola función.
+El detalle está en `ide-datos/scripts/README.md`. Si alguna vez se cambia el
+criterio geodésico, se cambia en los dos motores, nunca en uno.
+
+**Todos los workflows van en `.github/workflows/` de la raíz.**
 `nomenclatura.md` §10 los pone dentro de `ide-datos/` e `ide-visores/`, pero eso
-suponía dos repositorios separados. Con un solo repo, GitHub Actions solo lee la
-carpeta de la raíz: un `.yml` en `ide-datos/.github/workflows/` nunca se
-ejecuta. No es una limitación: un workflow filtra por `paths:` y corre solo
-cuando cambia la parte del repo que le importa, que es exactamente lo que hace
-`validar.yml`. Las carpetas `ide-datos/.github/` e `ide-visores/.github/` son
-scaffolding muerto y conviene eliminarlas para que nadie deje un workflow ahí
-esperando que corra.
+suponía dos repositorios. Con un solo repo, GitHub Actions solo lee la carpeta
+de la raíz. No es una limitación: cada workflow filtra por `paths:` y corre solo
+cuando cambia lo suyo. Conviene borrar `ide-datos/.github/` e
+`ide-visores/.github/` para que nadie deje un `.yml` ahí esperando que corra.
 
-**Errores vs. avisos.** El validador frena el CI solo ante errores
-(nomenclatura violada, CRS incorrecto, archivo faltante). Los avisos —
-descripción corta, linaje vacío, versión sin SemVer — quedan visibles en el log
-sin bloquear la carga. La idea es que el primer dataset entre hoy y la calidad
-del metadato mejore con el tiempo, no que la barra perfecta impida empezar.
+**Errores vs. avisos.** El CI frena solo ante errores. Los avisos quedan
+visibles sin bloquear: la idea es que el primer dataset entre y la calidad del
+metadato mejore con el tiempo, no que la barra perfecta impida empezar.
