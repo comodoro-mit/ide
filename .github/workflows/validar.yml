@@ -1,0 +1,45 @@
+name: Validar catálogo y maestros
+
+on:
+  push:
+    paths:
+      - 'ide-datos/catalogo/**'
+      - 'ide-datos/maestros/**'
+      - 'ide-datos/scripts/**'
+      - '.github/workflows/validar.yml'
+  pull_request:
+    paths:
+      - 'ide-datos/catalogo/**'
+      - 'ide-datos/maestros/**'
+      - 'ide-datos/scripts/**'
+  workflow_dispatch:
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # fecha_modificacion comes from git log, so shallow clones lie.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # No dependencies on purpose: the scripts read GeoPackages with sqlite3.
+
+      - name: Validar catálogo y maestros
+        run: python ide-datos/scripts/validar_catalogo.py
+
+      - name: Derivar catálogo completo
+        run: python ide-datos/scripts/derivar_catalogo.py
+
+      - name: Publicar catálogo derivado como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogo-completo
+          path: |
+            ide-datos/catalogo/catalogo_completo.csv
+            ide-datos/catalogo/catalogo_completo.json
+          retention-days: 90
