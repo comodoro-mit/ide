@@ -44,3 +44,9 @@ monthly-test-report/
 # Catalogo derivado (lo regenera derivar_catalogo.py, ADR-002)
 ide-datos/catalogo/catalogo_completo.csv
 ide-datos/catalogo/catalogo_completo.json
+
+# Derivados de publicacion (los regenera generar_derivados.py, ADR-002)
+ide-datos/derivados/
+
+# Sitio armado para publicar (lo regenera armar_sitio.py, ADR-002)
+sitio/
