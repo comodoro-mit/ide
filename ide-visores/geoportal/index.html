@@ -5,52 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IDE Comodoro Rivadavia — Datos abiertos</title>
 <meta name="description" content="Infraestructura de Datos Espaciales de la Municipalidad de Comodoro Rivadavia. Datos geoespaciales abiertos en GeoPackage y GeoJSON.">
+<meta name="theme-color" content="#134768">
+<link rel="icon" type="image/png" href="img/logotipo_icono.png">
+<link rel="apple-touch-icon" href="img/logotipo_icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 
-<header class="encabezado">
+<!--{{ENCABEZADO}}-->
+
+<!-- Background image set in estilos.css: --hero-imagen. -->
+<section class="portada">
   <div class="contenedor">
-    <p class="organismo">Municipalidad de Comodoro Rivadavia</p>
-    <h1>Infraestructura de Datos Espaciales</h1>
-    <p class="bajada">
-      Datos geoespaciales oficiales del municipio, abiertos y descargables.
-      El GeoPackage es el dato autoritativo, en EPSG:5344. El GeoJSON se deriva
-      de él en EPSG:4326 para uso web.
-    </p>
+    <h1>IDE Comodoro</h1>
+    <p class="bajada">La Infraestructura de Datos Espaciales del Municipio de Comodoro Rivadavia reúne, estandariza y publica la información geoespacial oficial del municipio, para que cualquiera pueda consultarla, descargarla y reutilizarla
+
+.</p>
   </div>
-</header>
+</section>
 
 <main class="contenedor">
 
   <div class="barra">
-    <!-- app.js oculta este bloque si hay pocos datasets: filtrar tres fichas
-         no le sirve a nadie. Sin JavaScript queda oculto y las fichas se ven
-         igual, porque ya vienen escritas en el HTML. -->
+    <!-- app.js reveals this only when there are enough datasets to filter. -->
     <div class="buscador" id="buscador" hidden>
       <label for="filtro" class="visualmente-oculto">Buscar conjuntos de datos</label>
       <input type="search" id="filtro" placeholder="Buscar por nombre, tema o palabra clave" autocomplete="off">
     </div>
-    <!-- Las dos formas viven acá, no en el JavaScript, para que la redacción se
-         edite en el HTML como todo el resto del texto de la página. -->
-    <p class="conteo" data-singular="conjunto de datos" data-plural="conjuntos de datos">
-      <strong>{{CANTIDAD}}</strong> <span class="unidad">{{PLURAL}}</span>
-    </p>
+    <p class="conteo">Conjuntos de datos disponibles: <strong>{{CANTIDAD}}</strong></p>
   </div>
 
   <div class="fichas" id="fichas">
 <!--{{FICHAS_INICIO}}-->
-    <!-- Todo lo que hay entre estos dos marcadores lo reemplaza armar_sitio.py
-         con una ficha por dataset del catálogo. La ficha de ejemplo que sigue
-         está acá para poder abrir esta plantilla en el navegador y trabajar el
-         diseño sin correr el pipeline. En el sitio publicado no aparece. -->
+    <!-- armar_sitio.py replaces everything between the markers with one card
+         per dataset. This sample card only exists so the template can be
+         opened in a browser; it never reaches the published site. -->
     <article class="ficha">
-      <h2>
-        <span class="titulo">Título del conjunto de datos</span>
-        <span class="etiqueta">adm</span>
-      </h2>
+      <h2><span class="titulo">Título del conjunto de datos</span></h2>
       <p class="descripcion">Descripción del conjunto de datos, tal como figura en el catálogo.</p>
       <dl>
+        <dt>Tema</dt><dd>Límites y administración</dd>
         <dt>Identificador</dt><dd><code>cr-tema-entidad</code></dd>
         <dt>Registros</dt><dd>0</dd>
         <dt>Geometría</dt><dd>MULTIPOLYGON</dd>
@@ -74,19 +70,7 @@
 
 </main>
 
-<footer class="contenedor">
-  <p>
-    Catálogo completo: <a href="catalogo.csv">CSV</a> · <a href="catalogo.json">JSON</a>
-  </p>
-  <p class="fino">
-    Metadatos según el Perfil de Metadatos para Datos Vectoriales v2.0 de IDERA
-    (ISO 19115 / ISO 19139).
-  </p>
-  <p class="fino">
-    Dirección General de Modernización e Investigación Territorial —
-    Geoestadísticas. Última actualización: {{FECHA}}.
-  </p>
-</footer>
+<!--{{PIE}}-->
 
 <script src="app.js"></script>
 </body>

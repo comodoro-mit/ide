@@ -6,6 +6,49 @@
  * portal should not go blank because a script failed.
  */
 
+/* --- hero parallax ------------------------------------------------------ */
+
+(function () {
+  "use strict";
+
+  var portada = document.querySelector(".portada");
+  if (!portada) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // How far the backdrop drifts, in px, at the edges of the section.
+  var RECORRIDO = 50;
+
+  var pendiente = null;
+
+  function mover(evento) {
+    if (pendiente) return; // one update per frame, not one per event
+    pendiente = window.requestAnimationFrame(function () {
+      pendiente = null;
+      var caja = portada.getBoundingClientRect();
+      var x = (evento.clientX - caja.left) / caja.width - 0.5;
+      var y = (evento.clientY - caja.top) / caja.height - 0.5;
+      // Opposite to the pointer: the backdrop reads as further away.
+      portada.style.setProperty("--hero-x", (-x * RECORRIDO).toFixed(2) + "px");
+      portada.style.setProperty("--hero-y", (-y * RECORRIDO).toFixed(2) + "px");
+    });
+  }
+
+  function volver() {
+    if (pendiente) window.cancelAnimationFrame(pendiente);
+    pendiente = null;
+    portada.style.setProperty("--hero-x", "0px");
+    portada.style.setProperty("--hero-y", "0px");
+  }
+
+  portada.addEventListener("pointermove", function (evento) {
+    if (evento.pointerType === "touch") return;
+    mover(evento);
+  });
+  portada.addEventListener("pointerleave", volver);
+})();
+
+/* --- dataset search ----------------------------------------------------- */
+
 (function () {
   "use strict";
 
@@ -16,9 +59,7 @@
   var buscador = document.getElementById("buscador");
   var entrada = document.getElementById("filtro");
   var sinResultados = document.getElementById("sin-resultados");
-  var bloqueConteo = document.querySelector(".conteo");
-  var conteo = bloqueConteo && bloqueConteo.querySelector("strong");
-  var unidad = bloqueConteo && bloqueConteo.querySelector(".unidad");
+  var conteo = document.querySelector(".conteo strong");
 
   if (!contenedor || !buscador || !entrada) return;
 
@@ -60,12 +101,6 @@
 
     if (sinResultados) sinResultados.hidden = visibles !== 0;
     if (conteo) conteo.textContent = String(visibles);
-    if (unidad) {
-      unidad.textContent =
-        visibles === 1
-          ? bloqueConteo.dataset.singular
-          : bloqueConteo.dataset.plural;
-    }
   }
 
   var pendiente;

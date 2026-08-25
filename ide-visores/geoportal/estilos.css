@@ -1,37 +1,35 @@
-/* Geoportal IDE Comodoro Rivadavia
-   Hoja de estilos del sitio principal. Se edita a mano; armar_sitio.py la copia
-   tal cual al sitio publicado. */
+/* Geoportal IDE Comodoro Rivadavia — main stylesheet.
+   Hand-edited; armar_sitio.py copies it to the published site as is. */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --tinta: #1a1a1a;
-  --suave: #5c5c5c;
-  --linea: #e0ddd8;
-  --fondo: #faf9f7;
+  --marca: #134768;
+  --marca-clara: #1d6291;
+  --marca-oscura: #071c29;
+  --bg: #e4e5e5;
+  --titulo: #1b1b1b;
+  --tinta: #16232b;
+  --suave: #5a6670;
+  --linea: #c9cccd;
   --tarjeta: #ffffff;
-  --acento: #1c5d78;
-  --ancho: 62rem;
+  --pie-bg: #f5f5f5;
+  --acento: #134768;
+  --ancho: 68rem;
+  /* Hero backdrop: swap the file or tune the opacity here, nowhere else. */
+  --hero-imagen: url("img/hero_background.png");
+  --hero-opacidad: .35;
   --radio: 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --tinta: #ececec;
-    --suave: #a0a0a0;
-    --linea: #33312e;
-    --fondo: #171614;
-    --tarjeta: #201f1c;
-    --acento: #7fc4e0;
-  }
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: var(--fondo);
+  background: var(--bg);
   color: var(--tinta);
   line-height: 1.6;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 .contenedor {
@@ -42,36 +40,121 @@ body {
 
 a { color: var(--acento); }
 
-/* --- encabezado --- */
+/* --- brand bar --- */
 
-.encabezado {
-  border-bottom: 1px solid var(--linea);
-  padding: 2.5rem 0 2rem;
-  margin-bottom: 2rem;
+.barra-marca {
+  background: var(--marca);
+  color: #fff;
 }
 
-.organismo {
-  margin: 0 0 .35rem;
+.barra-marca .contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 5.5rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.marca img {
+  height: 3.4rem;
+  width: auto;
+  display: block;
+}
+
+
+/* --- header tabs --- */
+
+.solapas {
+  display: flex;
+  gap: .25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.solapas a {
+  display: inline-block;
+  padding: .3rem .65rem;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.507);
+  text-decoration: none;
   font-size: .8125rem;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--suave);
+  font-weight: 500;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  transition: background-color .15s ease, color .15s ease;
 }
 
-.encabezado h1 {
+.solapas a:hover,
+.solapas a:focus-visible {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+}
+
+.solapas a[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.507);
+  color: #fff;
+}
+
+/* --- hero --- */
+
+.portada {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  text-align: center;
+  padding: 3.25rem 0 2.5rem;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 2.25rem;
+}
+
+/* The image lives on its own layer so the text keeps full contrast. */
+.portada::before {
+  content: "";
+  position: absolute;
+  inset: -6%;
+  z-index: -1;
+  background: var(--hero-imagen) center / cover no-repeat;
+  opacity: var(--hero-opacidad);
+  /* app.js writes the two offsets on pointer move; both default to 0. */
+  transform: translate3d(var(--hero-x, 0px), var(--hero-y, 0px), 0);
+  transition: transform .5s cubic-bezier(.22, .61, .36, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portada::before { transition: none; transform: none; }
+}
+
+.portada h1 {
   margin: 0 0 .75rem;
-  font-size: 1.875rem;
-  letter-spacing: -.015em;
-  line-height: 1.25;
+  font-size: clamp(1rem, 5vw, 5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.05em;
+  color: var(--titulo);
 }
 
 .bajada {
-  margin: 0;
-  max-width: 46rem;
-  color: var(--suave);
+  margin: 0 auto;
+  max-width: 38rem;
+  color: var(--marca-oscura);
+  line-height: 1.25;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-/* --- barra de control --- */
+/* --- control bar --- */
 
 .barra {
   display: flex;
@@ -107,14 +190,15 @@ a { color: var(--acento); }
   font-variant-numeric: tabular-nums;
 }
 
-/* --- fichas --- */
+/* --- dataset cards --- */
 
 .ficha {
   background: var(--tarjeta);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1rem;
+  padding: .85rem 1.05rem;
+  margin-bottom: .7rem;
+  font-size: .875rem;
 }
 
 .ficha h2 {
@@ -123,30 +207,21 @@ a { color: var(--acento); }
   gap: .5rem;
   align-items: baseline;
   margin: 0 0 .35rem;
-  font-size: 1.125rem;
-}
-
-.etiqueta {
-  font-size: .6875rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: var(--suave);
-  border: 1px solid var(--linea);
-  border-radius: 4px;
-  padding: .1rem .4rem;
+  font-size: 1rem;
+  color: var(--marca);
 }
 
 .descripcion {
-  margin: 0 0 .9rem;
+  margin: 0 0 .8rem;
   color: var(--suave);
 }
 
 .ficha dl {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: .15rem 1rem;
-  margin: 0 0 1rem;
-  font-size: .875rem;
+  gap: .1rem .9rem;
+  margin: 0 0 .75rem;
+  font-size: .78125rem;
 }
 
 .ficha dt { color: var(--suave); }
@@ -160,15 +235,20 @@ a { color: var(--acento); }
 
 .descargas a {
   display: inline-block;
-  padding: .35rem .8rem;
+  padding: .28rem .65rem;
   border: 1px solid var(--linea);
   border-radius: 6px;
   text-decoration: none;
-  font-size: .875rem;
+  font-size: .78125rem;
+  font-weight: 500;
 }
 
 .descargas a:hover,
-.descargas a:focus-visible { border-color: var(--acento); }
+.descargas a:focus-visible {
+  border-color: var(--marca);
+  background: var(--marca);
+  color: #fff;
+}
 
 .sin-resultados {
   padding: 2rem 0;
@@ -176,21 +256,70 @@ a { color: var(--acento); }
   color: var(--suave);
 }
 
-/* --- pie --- */
+/* --- footer --- */
 
-footer {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  padding-bottom: 4rem;
+.pie {
+  margin-top: 3.5rem;
+  background: var(--pie-bg);
   border-top: 1px solid var(--linea);
-  color: var(--suave);
-  font-size: .875rem;
+  font-size: .75rem;
 }
 
-footer p { margin: 0 0 .5rem; }
-.fino { font-size: .8125rem; }
+.pie .contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 3rem;
+  justify-content: space-between;
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+}
 
-/* Oculto a la vista pero legible por lectores de pantalla. */
+.pie p { margin: 0 0 .3rem; }
+
+.pie a {
+  color: var(--suave);
+  text-decoration: none;
+}
+
+.pie a:hover,
+.pie a:focus-visible { color: var(--marca); text-decoration: underline; }
+
+/* Left column: the chain of command, innermost unit first. */
+.organigrama {
+  border-left: 2px solid var(--linea);
+  padding-left: 1rem;
+  color: var(--suave);
+}
+
+.unidad-fuerte {
+  color: var(--titulo);
+  font-weight: 600;
+}
+
+.legal {
+  margin-top: .9rem;
+  font-size: .8125rem;
+  color: var(--suave);
+}
+
+.navegacion .rotulo {
+  margin-bottom: .6rem;
+  font-size: .6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--suave);
+}
+
+.navegacion ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navegacion li { margin-bottom: .3rem; }
+
+/* Hidden visually, still read by screen readers. */
 .visualmente-oculto {
   position: absolute;
   width: 1px;
@@ -201,6 +330,10 @@ footer p { margin: 0 0 .5rem; }
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+@media (max-width: 46rem) {
+  .barra-marca .contenedor { flex-wrap: wrap; }
 }
 
 @media (max-width: 30rem) {
