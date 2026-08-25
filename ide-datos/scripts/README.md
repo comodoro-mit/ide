@@ -152,7 +152,8 @@ Copia e indexa; nunca convierte. Produce una carpeta estática:
 
 ```
 sitio/
-  index.html            listado generado desde el catálogo
+  index.html            la plantilla del geoportal, rellenada
+  estilos.css, app.js   copiados de ide-visores/geoportal/
   catalogo.csv, .json   el catálogo completo
   datos/<id>.gpkg       el maestro, para QGIS y ArcGIS
   datos/<id>.geojson    para visores web y todo lo demás
@@ -171,6 +172,23 @@ gratuito y hay que ir a R2) o si el sitio entero pasa 1 GB (tope de GitHub
 Pages).
 
 Es agnóstico del host: una carpeta estática es todo lo que piden los dos.
+
+### La página la escribe el geoportal, no este script
+
+El HTML, el CSS y el JS viven en `ide-visores/geoportal/` como archivos
+normales. `armar_sitio.py` solo rellena la plantilla: reemplaza todo lo que hay
+entre `<!--{{FICHAS_INICIO}}-->` y `<!--{{FICHAS_FIN}}-->` por una ficha por
+dataset, y sustituye `{{CANTIDAD}}`, `{{PLURAL}}` y `{{FECHA}}`.
+
+Dos consecuencias que conviene mantener:
+
+- El listado queda **escrito dentro del HTML** al publicar, no lo arma
+  JavaScript. El sitio funciona con JS deshabilitado y los buscadores lo
+  indexan. `app.js` solo agrega búsqueda encima de fichas que ya están.
+- El diseño se edita como un archivo que se abre en el navegador, no como un
+  string dentro de Python. La plantilla trae una ficha de ejemplo entre los
+  marcadores justamente para eso: se ve el estilo sin correr el pipeline, y en
+  el sitio publicado desaparece.
 
 ### La URL base
 
