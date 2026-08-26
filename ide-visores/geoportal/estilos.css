@@ -13,6 +13,8 @@
   --suave: #5a6670;
   --linea: #c9cccd;
   --tarjeta: #ffffff;
+  --chip-tema: #9aa4ab;
+  --chip-tema-linea: #dfe2e3;
   --pie-bg: #f5f5f5;
   --acento: #134768;
   --ancho: 68rem;
@@ -24,8 +26,21 @@
 
 * { box-sizing: border-box; }
 
+/* Always reserve the scrollbar gutter. Without this, filtering down to a few
+   cards removes the scrollbar and the whole page jumps wider. */
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 body {
   margin: 0;
+  /* Column flex plus a growing main: the footer stays at the bottom even on a
+     page with almost no content. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--tinta);
   line-height: 1.6;
@@ -39,6 +54,8 @@ body {
 }
 
 a { color: var(--acento); }
+
+main { flex: 1 0 auto; }
 
 /* --- brand bar --- */
 
@@ -147,12 +164,16 @@ a { color: var(--acento); }
 
 .bajada {
   margin: 0 auto;
-  max-width: 38rem;
   color: var(--marca-oscura);
   line-height: 1.25;
   font-size: 1rem;
   font-weight: 600;
 }
+
+/* Inner pages: shorter hero, no backdrop. The image belongs to the home. */
+.portada-interior { padding: 2.25rem 0 1.75rem; }
+.portada-interior::before { content: none; }
+.portada-interior h1 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); }
 
 /* --- control bar --- */
 
@@ -190,9 +211,290 @@ a { color: var(--acento); }
   font-variant-numeric: tabular-nums;
 }
 
+/* --- home --- */
+
+.intro { margin-bottom: 2.5rem; }
+
+.intro h2,
+.institucional h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--marca);
+}
+
+.intro p,
+.institucional p { margin: 0 0 .9rem; }
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 2rem;
+  row-gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tarjeta {
+  display: block;
+  padding: 1.1rem 1.25rem;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.tarjeta:hover,
+.tarjeta:focus-visible {
+  border-color: var(--marca);
+  transform: translateY(-2px);
+}
+
+.tarjeta h3 {
+  margin: 0 0 .35rem;
+  font-size: 1rem;
+  color: var(--marca);
+}
+
+.tarjeta p {
+  margin: 0;
+  font-size: .875rem;
+  color: var(--suave);
+}
+
+.institucional {
+  padding-top: 2rem;
+  border-top: 1px solid var(--linea);
+}
+
+.institucional .contacto { margin-top: 1.25rem; font-size: .9375rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta { transition: none; }
+  .tarjeta:hover { transform: none; }
+}
+
+/* --- map viewer --- */
+/* The viewer breaks out of the shared container: a map wants the screen. The
+   side gutters keep it from touching the edge. */
+
+.visor-ancho {
+  width: 100%;
+  max-width: 110rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.visor {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: 1rem;
+  /* Header, hero and footer already took their share of the viewport. */
+  height: calc(100vh - 19rem);
+  min-height: 26rem;
+  margin-bottom: .6rem;
+}
+
+.panel {
+  padding: 1rem;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  overflow-y: auto;
+}
+
+.panel h2 {
+  margin: 0 0 .75rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--suave);
+}
+
+.capas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: .875rem;
+}
+
+.grupo {
+  margin: .9rem 0 .35rem;
+  font-size: .6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--chip-tema);
+}
+
+.grupo:first-child { margin-top: 0; }
+
+.capa label {
+  display: flex;
+  gap: .5rem;
+  align-items: start;
+  padding: .2rem 0;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.capa input { margin-top: .25rem; accent-color: var(--marca); }
+
+.capa.cargando span { opacity: .5; }
+.capa.fallo span { color: #a33; }
+
+.nota-visor { margin: 0; font-size: .8125rem; color: var(--suave); }
+
+/* --- map and its floating controls --- */
+
+.lienzo {
+  position: relative;
+  /* Control tokens, in the glass style of the transporte-demo viewer. */
+  --vidrio-bg: rgba(255, 255, 255, .62);
+  --vidrio-desenfoque: blur(20px) saturate(180%);
+  --vidrio-brillo: rgba(255, 255, 255, .55);
+  --vidrio-borde-arriba: rgba(255, 255, 255, .85);
+  --vidrio-hair: #e1e0d9;
+  --vidrio-tinta: #0b0b0b;
+  --vidrio-apagado: #898781;
+  --vidrio-lavado: rgba(11, 11, 11, .08);
+}
+
+/* Over a dark base the controls invert, or they glow like a lamp. */
+.lienzo.oscuro {
+  --vidrio-bg: rgba(46, 46, 44, .63);
+  --vidrio-brillo: rgba(255, 255, 255, .16);
+  --vidrio-borde-arriba: rgba(255, 255, 255, .22);
+  --vidrio-hair: #2c2c2a;
+  --vidrio-tinta: #fff;
+  --vidrio-apagado: #a9a7a0;
+  --vidrio-lavado: rgba(255, 255, 255, .11);
+}
+
+.mapa {
+  height: 100%;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.mapa.mapa-oscuro { background: #141414; }
+
+.mapa .leaflet-container { font: inherit; font-size: .75rem; }
+
+/* Leaflet's own bars follow the same skin. */
+.mapa .leaflet-bar,
+.mapa .leaflet-control-attribution { border-color: var(--vidrio-hair); }
+
+.ctrl {
+  position: absolute;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--vidrio-bg);
+  backdrop-filter: var(--vidrio-desenfoque);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-hair);
+  border-top-color: var(--vidrio-borde-arriba);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(11, 11, 11, .18),
+              inset 0 1px 0 var(--vidrio-brillo);
+}
+
+.ctrl[hidden] { display: none; }
+
+.ctrl-zoom { top: .75rem; left: .75rem; }
+
+.mando {
+  top: .75rem;
+  right: .75rem;
+  flex-direction: row;
+}
+
+.ctrl button {
+  font: inherit;
+  font-size: .8125rem;
+  font-weight: 500;
+  display: grid;
+  place-items: center;
+  padding: 9px 10px;
+  color: var(--vidrio-apagado);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--vidrio-hair);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background .15s ease, color .15s ease, transform .08s ease;
+}
+
+.ctrl button:last-child { border-bottom: none; }
+
+/* A row group divides with vertical hairlines instead. */
+.mando button {
+  border-bottom: none;
+  border-right: 1px solid var(--vidrio-hair);
+}
+
+.mando button:last-child { border-right: none; }
+
+.ctrl button.ancho { padding: 9px 14px; }
+
+.ctrl button:hover {
+  background: var(--vidrio-lavado);
+  color: var(--vidrio-tinta);
+}
+
+.ctrl button:active { transform: scale(.92); }
+
+.ctrl button:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: -2px;
+}
+
+.ctrl button[aria-pressed="true"] {
+  background: var(--marca);
+  color: #fff;
+}
+
+.ctrl button:disabled {
+  opacity: .35;
+  pointer-events: none;
+}
+
+.ctrl svg { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ctrl button { transition: none; }
+  .ctrl button:active { transform: none; }
+}
+
+.creditos {
+  margin: 0 0 2rem;
+  font-size: .6875rem;
+  line-height: 1.5;
+  color: var(--chip-tema);
+}
+
+.creditos a { color: inherit; }
+
+@media (max-width: 46rem) {
+  .visor-ancho { padding: 0 1.25rem; }
+  .visor {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 11rem minmax(0, 1fr);
+    height: calc(100vh - 14rem);
+  }
+}
+
 /* --- dataset cards --- */
 
 .ficha {
+  position: relative;
+  padding-right: 12rem;
   background: var(--tarjeta);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
@@ -200,6 +502,80 @@ a { color: var(--acento); }
   margin-bottom: .7rem;
   font-size: .875rem;
 }
+
+/* Theme chip, pinned to the card's top right corner. */
+.etiqueta {
+  position: absolute;
+  top: .85rem;
+  right: 1.05rem;
+  white-space: nowrap;
+  font-size: .5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--chip-tema);
+  border: 1px solid var(--chip-tema-linea);
+  border-radius: 999px;
+  padding: .1rem .5rem;
+}
+
+/* --- theme filter --- */
+/* Hidden until app.js takes over: without JS the chips would do nothing and
+   the full list is already on the page. */
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: 1.25rem;
+}
+
+.filtros[hidden] { display: none; }
+
+.chip {
+  font: inherit;
+  font-size: .78125rem;
+  font-weight: 500;
+  padding: .3rem .7rem;
+  color: var(--tinta);
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:hover { border-color: var(--marca); }
+
+.chip:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 1px;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--marca);
+  border-color: var(--marca);
+  color: #fff;
+}
+
+.chip .cuenta {
+  font-variant-numeric: tabular-nums;
+  opacity: .65;
+}
+
+/* --- collapsed detail --- */
+
+.mas { margin: 0 0 .75rem; }
+
+.mas summary {
+  font-size: .78125rem;
+  color: var(--suave);
+  cursor: pointer;
+}
+
+.mas summary:hover { color: var(--marca); }
+
+.mas dl { margin-top: .4rem; }
 
 .ficha h2 {
   display: flex;
@@ -334,6 +710,18 @@ a { color: var(--acento); }
 
 @media (max-width: 46rem) {
   .barra-marca .contenedor { flex-wrap: wrap; }
+}
+
+@media (max-width: 40rem) {
+  /* No room for a corner chip: it goes back into the flow. */
+  .ficha { padding-right: 1.05rem; }
+  .etiqueta {
+    position: static;
+    display: inline-block;
+    max-width: none;
+    text-align: left;
+    margin-bottom: .5rem;
+  }
 }
 
 @media (max-width: 30rem) {

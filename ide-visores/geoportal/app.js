@@ -47,7 +47,7 @@
   portada.addEventListener("pointerleave", volver);
 })();
 
-/* --- dataset search ----------------------------------------------------- */
+/* --- dataset search and theme filter ------------------------------------ */
 
 (function () {
   "use strict";
@@ -56,25 +56,27 @@
   var MINIMO_PARA_BUSCAR = 4;
 
   var contenedor = document.getElementById("fichas");
+  if (!contenedor) return;
+
   var buscador = document.getElementById("buscador");
   var entrada = document.getElementById("filtro");
+  var filtros = document.getElementById("filtros");
   var sinResultados = document.getElementById("sin-resultados");
   var conteo = document.querySelector(".conteo strong");
 
-  if (!contenedor || !buscador || !entrada) return;
-
   var fichas = Array.prototype.slice.call(contenedor.querySelectorAll(".ficha"));
-  if (fichas.length < MINIMO_PARA_BUSCAR) return;
-
-  buscador.hidden = false;
+  if (!fichas.length) return;
 
   // Index each card once, so typing does not walk the DOM on every keystroke.
   var indice = fichas.map(function (ficha) {
     return {
       nodo: ficha,
+      tema: ficha.dataset.tema || "",
       texto: normalizar(ficha.textContent)
     };
   });
+
+  var temaActivo = "";
 
   // Fold accents and case so "limites" finds "Límites".
   function normalizar(texto) {
@@ -87,14 +89,16 @@
   }
 
   function filtrar() {
-    var consulta = normalizar(entrada.value);
+    var consulta = entrada ? normalizar(entrada.value) : "";
     var terminos = consulta ? consulta.split(" ") : [];
     var visibles = 0;
 
     indice.forEach(function (item) {
-      var coincide = terminos.every(function (termino) {
-        return item.texto.indexOf(termino) !== -1;
-      });
+      var coincide =
+        (!temaActivo || item.tema === temaActivo) &&
+        terminos.every(function (termino) {
+          return item.texto.indexOf(termino) !== -1;
+        });
       item.nodo.hidden = !coincide;
       if (coincide) visibles++;
     });
@@ -102,6 +106,50 @@
     if (sinResultados) sinResultados.hidden = visibles !== 0;
     if (conteo) conteo.textContent = String(visibles);
   }
+
+  // --- theme chips
+
+  if (filtros) {
+    filtros.hidden = false;
+
+    filtros.addEventListener("click", function (evento) {
+      var chip = evento.target.closest(".chip");
+      if (!chip) return;
+      elegirTema(chip.dataset.tema || "", true);
+    });
+
+    // A shareable filter: datasets.html#tema=adm opens already filtered.
+    leerHash();
+    window.addEventListener("hashchange", leerHash);
+  }
+
+  function elegirTema(tema, escribirHash) {
+    temaActivo = tema;
+    Array.prototype.forEach.call(filtros.querySelectorAll(".chip"), function (chip) {
+      chip.setAttribute(
+        "aria-pressed",
+        (chip.dataset.tema || "") === tema ? "true" : "false"
+      );
+    });
+    if (escribirHash) {
+      // replaceState, not a hash assignment: filtering should not fill the
+      // back button with one entry per click.
+      history.replaceState(null, "", tema ? "#tema=" + tema : location.pathname);
+    }
+    filtrar();
+  }
+
+  function leerHash() {
+    var encontrado = /^#tema=([a-z]{3})$/.exec(location.hash);
+    var tema = encontrado ? encontrado[1] : "";
+    if (tema !== temaActivo) elegirTema(tema, false);
+  }
+
+  // --- search box
+
+  if (!buscador || !entrada || fichas.length < MINIMO_PARA_BUSCAR) return;
+
+  buscador.hidden = false;
 
   var pendiente;
   entrada.addEventListener("input", function () {

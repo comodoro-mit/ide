@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDE Comodoro Rivadavia</title>
+<meta name="description" content="Infraestructura de Datos Espaciales de la Municipalidad de Comodoro Rivadavia. Datos geoespaciales abiertos en GeoPackage y GeoJSON.">
+<meta name="theme-color" content="#134768">
+<link rel="icon" type="image/png" href="img/logotipo_icono.png">
+<link rel="apple-touch-icon" href="img/logotipo_icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<!--{{ENCABEZADO}}-->
+
+<!-- Background image set in estilos.css: --hero-imagen. -->
+<section class="portada">
+  <div class="contenedor">
+    <h1>IDE Comodoro</h1>
+    <p class="bajada">La Infraestructura de Datos Espaciales de Comodoro Rivadavia reúne, estandariza y publica<br> la información geoespacial oficial del municipio, para que cualquiera pueda consultarla, descargarla y reutilizarla.
+</p>
+  </div>
+</section>
+
+<main class="contenedor">
+
+  <div class="barra">
+    <!-- app.js reveals this only when there are enough datasets to filter. -->
+    <div class="buscador" id="buscador" hidden>
+      <label for="filtro" class="visualmente-oculto">Buscar conjuntos de datos</label>
+      <input type="search" id="filtro" placeholder="Buscar por nombre, tema o palabra clave" autocomplete="off">
+    </div>
+    <p class="conteo" aria-live="polite">Conjuntos de datos disponibles: <strong>{{CANTIDAD}}</strong></p>
+  </div>
+
+  <!--{{FILTROS}}-->
+
+  <div class="fichas" id="fichas">
+<!--{{FICHAS_INICIO}}-->
+    <!-- armar_sitio.py replaces everything between the markers with one card
+         per dataset. This sample card only exists so the template can be
+         opened in a browser; it never reaches the published site. -->
+    <article class="ficha">
+      <h2><span class="titulo">Título del conjunto de datos</span></h2>
+      <p class="descripcion">Descripción del conjunto de datos, tal como figura en el catálogo.</p>
+      <dl>
+        <dt>Tema</dt><dd>Límites y administración</dd>
+        <dt>Identificador</dt><dd><code>cr-tema-entidad</code></dd>
+        <dt>Registros</dt><dd>0</dd>
+        <dt>Geometría</dt><dd>MULTIPOLYGON</dd>
+        <dt>Sistema de referencia</dt><dd>EPSG:5344</dd>
+        <dt>Versión</dt><dd>1.0.0</dd>
+        <dt>Licencia</dt><dd>Creative Commons Attribution 4.0</dd>
+        <dt>Actualizado</dt><dd>2026-01-01</dd>
+      </dl>
+      <div class="descargas">
+        <a href="#" download target="_blank" rel="noopener">GeoPackage</a>
+        <a href="#" download target="_blank" rel="noopener">GeoJSON</a>
+        <a href="#" target="_blank" rel="noopener">Metadatos ISO</a>
+      </div>
+    </article>
+<!--{{FICHAS_FIN}}-->
+  </div>
+
+  <p class="sin-resultados" id="sin-resultados" hidden>
+    Ningún conjunto de datos coincide con la búsqueda.
+  </p>
+
+</main>
+
+<!--{{PIE}}-->
+
+<script src="app.js"></script>
+</body>
+</html>

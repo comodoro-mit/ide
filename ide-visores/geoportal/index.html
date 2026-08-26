@@ -20,52 +20,76 @@
 <section class="portada">
   <div class="contenedor">
     <h1>IDE Comodoro</h1>
-    <p class="bajada">La Infraestructura de Datos Espaciales de Comodoro Rivadavia reúne, estandariza y publica la información geoespacial oficial del municipio, para que cualquiera pueda consultarla, descargarla y reutilizarla.
+    <p class="bajada">La Infraestructura de Datos Espaciales de Comodoro Rivadavia reúne, estandariza y publica<br> la información geoespacial oficial del municipio, para que cualquiera pueda consultarla, descargarla y reutilizarla.
 </p>
   </div>
 </section>
 
 <main class="contenedor">
 
-  <div class="barra">
-    <!-- app.js reveals this only when there are enough datasets to filter. -->
-    <div class="buscador" id="buscador" hidden>
-      <label for="filtro" class="visualmente-oculto">Buscar conjuntos de datos</label>
-      <input type="search" id="filtro" placeholder="Buscar por nombre, tema o palabra clave" autocomplete="off">
-    </div>
-    <p class="conteo">Conjuntos de datos disponibles: <strong>{{CANTIDAD}}</strong></p>
-  </div>
+  <section class="intro">
+    <h2>Un solo lugar para el dato geoespacial del municipio</h2>
+    <p>
+      Cada área del municipio produce información sobre el territorio: barrios,
+      espacios verdes, equipamiento, redes de servicio. Cuando esa información
+      vive en el escritorio donde se generó, nadie sabe cuál es la versión
+      vigente y el dato no se puede reutilizar.
+    </p>
+    <p>
+      Esta Infraestructura de Datos Espaciales resuelve eso con tres reglas: un
+      único archivo autoritativo por conjunto de datos, formatos abiertos y
+      metadatos normalizados, y un registro completo de cada cambio. Todo lo
+      publicado acá es descargable, citable y reutilizable, tanto por otras
+      áreas del Estado como por cualquier vecino.
+    </p>
+  </section>
 
-  <div class="fichas" id="fichas">
-<!--{{FICHAS_INICIO}}-->
-    <!-- armar_sitio.py replaces everything between the markers with one card
-         per dataset. This sample card only exists so the template can be
-         opened in a browser; it never reaches the published site. -->
-    <article class="ficha">
-      <h2><span class="titulo">Título del conjunto de datos</span></h2>
-      <p class="descripcion">Descripción del conjunto de datos, tal como figura en el catálogo.</p>
-      <dl>
-        <dt>Tema</dt><dd>Límites y administración</dd>
-        <dt>Identificador</dt><dd><code>cr-tema-entidad</code></dd>
-        <dt>Registros</dt><dd>0</dd>
-        <dt>Geometría</dt><dd>MULTIPOLYGON</dd>
-        <dt>Sistema de referencia</dt><dd>EPSG:5344</dd>
-        <dt>Versión</dt><dd>1.0.0</dd>
-        <dt>Licencia</dt><dd>Creative Commons Attribution 4.0</dd>
-        <dt>Actualizado</dt><dd>2026-01-01</dd>
-      </dl>
-      <div class="descargas">
-        <a href="#" download target="_blank" rel="noopener">GeoPackage</a>
-        <a href="#" download target="_blank" rel="noopener">GeoJSON</a>
-        <a href="#" target="_blank" rel="noopener">Metadatos ISO</a>
-      </div>
-    </article>
-<!--{{FICHAS_FIN}}-->
-  </div>
+  <nav class="tarjetas" aria-label="Secciones del sitio">
+    <a class="tarjeta" href="datasets.html" >
+      <h3>Datasets</h3>
+      <p>El catálogo completo, en GeoPackage y GeoJSON, con sus metadatos ISO.</p>
+    </a>
+    <a class="tarjeta" href="visor.html">
+      <h3>Visor</h3>
+      <p>Explorar la información en el mapa, sin instalar nada.</p>
+    </a>
+    <a class="tarjeta" href="documentacion.html">
+      <h3>Documentación</h3>
+      <p>Nomenclatura, estándares de metadatos y guías de uso.</p>
+    </a>
+    <a class="tarjeta" href="institucional.html">
+      <h3>Institucional</h3>
+      <p>Quiénes sostienen la IDE y bajo qué normas trabaja.</p>
+    </a>
+  </nav>
 
-  <p class="sin-resultados" id="sin-resultados" hidden>
-    Ningún conjunto de datos coincide con la búsqueda.
-  </p>
+  <section class="institucional">
+    <h2>Quién publica estos datos</h2>
+    <p>
+      El <strong>Departamento de Geoestadísticas</strong>, dependiente de la
+      Dirección General de Modernización e Investigación Territorial, es el área
+      responsable de producir, normalizar y publicar la información geoespacial
+      oficial del Municipio de Comodoro Rivadavia.
+    </p>
+    <p>
+      El trabajo sigue los lineamientos de
+      <a href="https://www.idera.gob.ar/" target="_blank" rel="noopener">IDERA</a>,
+      la Infraestructura de Datos Espaciales de la República Argentina: los
+      metadatos se documentan según su Perfil para Datos Vectoriales v2.0 sobre
+      ISO 19115 e ISO 19139, y cada conjunto de datos declara su categoría
+      temática, su sistema de referencia y su licencia.
+    </p>
+    <p>
+      Los datos se publican bajo licencia
+      <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">Creative Commons Atribución 4.0</a>:
+      se pueden copiar, transformar y usar con cualquier fin, incluso comercial,
+      con la única condición de citar la fuente.
+    </p>
+    <p class="contacto">
+      Consultas y pedidos de datos:
+      <a href="mailto:mit@comodoro.gov.ar" target="_blank" rel="noopener">mit@comodoro.gov.ar</a>
+    </p>
+  </section>
 
 </main>
 
