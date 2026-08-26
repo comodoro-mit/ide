@@ -17,7 +17,7 @@ Qué problema o necesidad motivó esta decisión. Incluye:
 
 ### Decisión
 
-Qué decidimos hacer, en 1–2 párrafos concisos. Sé específico.
+Qué decidimos hacer, en 1-2 párrafos concisos. Sé específico.
 
 ### Consecuencias
 

@@ -442,7 +442,7 @@ def _arco_meridiano(phi):
 
     Carried to e^8. Snyder prints the series to e^6, which is already accurate
     to 0.1 mm over this zone; e^8 brings it to 0.002 mm. Both are far below any
-    meaningful threshold — the extra term is kept only because it is free.
+    meaningful threshold - the extra term is kept only because it is free.
     """
     return _A * (
         _M_LINEAL * phi

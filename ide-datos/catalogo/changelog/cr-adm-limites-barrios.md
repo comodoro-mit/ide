@@ -1,4 +1,4 @@
-# cr-adm-limites-barrios — Límites de barrios
+# cr-adm-limites-barrios - Límites de barrios
 
 Historial de cambios del dataset. Uno por versión, más reciente arriba.
 El formato de versión es SemVer según `nomenclatura.md` §6:
@@ -9,7 +9,7 @@ El formato de versión es SemVer según `nomenclatura.md` §6:
 
 ---
 
-## 1.0.0 — 2026-08-24
+## 1.0.0 - 2026-08-24
 
 Primera carga del dataset como maestro versionado.
 

@@ -3,7 +3,7 @@
 The IDERA vector metadata profile v2.0 is ISO 19115 encoded as ISO 19139 XML,
 and defines 26 elements of which 17 are mandatory. This script builds that XML
 from what the pipeline already knows: the derived catalogue plus the QGIS .qmd
-sidecar. Nothing is invented — an element with no source is left out and
+sidecar. Nothing is invented - an element with no source is left out and
 reported as a compliance gap.
 
 This replaces the script of the same name in the old repository, which wrote
@@ -295,7 +295,7 @@ def main():
     raiz_datos = comun.raiz_datos()
     catalogo = raiz_datos / "catalogo" / "catalogo_completo.json"
     if not catalogo.exists():
-        print("[ERROR] falta catalogo_completo.json — correr derivar_catalogo.py")
+        print("[ERROR] falta catalogo_completo.json - correr derivar_catalogo.py")
         return 1
 
     if args.fecha:
@@ -325,7 +325,7 @@ def main():
         if faltan:
             incompletos += 1
             detalle = ", ".join(f"{c} ({OBLIGATORIOS[c]})" for c in faltan)
-            print(f"  {destino.name}: faltan {len(faltan)} obligatorio(s) — {detalle}")
+            print(f"  {destino.name}: faltan {len(faltan)} obligatorio(s) - {detalle}")
         else:
             print(f"  {destino.name}: completo, 17/17 obligatorios de IDERA")
 

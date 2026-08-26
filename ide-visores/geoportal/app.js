@@ -2,7 +2,7 @@
  *
  * The dataset cards are written into the HTML at publish time, not fetched
  * here. This file only enhances what is already on the page: if it never
- * loads, the listing still works. That is the point — a public open data
+ * loads, the listing still works. That is the point - a public open data
  * portal should not go blank because a script failed.
  */
 

@@ -5,8 +5,8 @@ misma licencia. Son dos obras distintas y se licencian por separado.
 
 ## Datos: CC BY 4.0
 
-Los conjuntos de datos geoespaciales publicados por esta IDE —los archivos
-`.gpkg`, `.geojson` y sus metadatos— se distribuyen bajo
+Los conjuntos de datos geoespaciales publicados por esta IDE -los archivos
+`.gpkg`, `.geojson` y sus metadatos- se distribuyen bajo
 **Creative Commons Atribución 4.0 Internacional (CC BY 4.0)**.
 
 - Texto legal: https://creativecommons.org/licenses/by/4.0/legalcode.es
@@ -17,7 +17,7 @@ con fines comerciales, con una sola condición: **atribuir la fuente**.
 
 Atribución sugerida:
 
-> Municipalidad de Comodoro Rivadavia — Infraestructura de Datos Espaciales.
+> Municipalidad de Comodoro Rivadavia - Infraestructura de Datos Espaciales.
 > Licencia CC BY 4.0.
 
 La licencia de cada conjunto de datos se declara además en su metadato ISO

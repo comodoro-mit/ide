@@ -37,12 +37,12 @@ versionan.
 | Archivo | ¿A mano? | ¿Se commitea? |
 |---|---|---|
 | `maestros/<tema>/*.gpkg` y `*.qmd` | Sí, en QGIS | Sí |
-| `catalogo/catalogo.csv` | **Sí — única fuente manual** | Sí |
+| `catalogo/catalogo.csv` | **Sí - única fuente manual** | Sí |
 | `catalogo/vocabularios/*.csv` | Sí, por el comité | Sí |
 | `catalogo/catalogo_completo.*` | **No** | No |
 | `derivados/*.geojson` | **No** | No |
 | `sitio/` | **No** | No |
-| `ide-visores/geoportal/*` | **Sí — html, css y js a mano** | Sí |
+| `ide-visores/geoportal/*` | **Sí - html, css y js a mano** | Sí |
 | `config.json` | Sí (una línea: `url_base`) | Sí |
 
 Los derivados se reescriben de cero en cada corrida. Un cambio hecho a mano ahí
@@ -68,21 +68,21 @@ catalogo(adm): register cr-adm-limites-barrios
 
 - [x] Estructura de carpetas, `catalogo.csv`, primer maestro
 - [x] `scripts/comun.py`, `validar_catalogo.py`, `derivar_catalogo.py`
-- [x] `scripts/generar_derivados.py` — GeoJSON 4326, dos motores equivalentes
+- [x] `scripts/generar_derivados.py` - GeoJSON 4326, dos motores equivalentes
 - [x] `.github/workflows/validar.yml` (en la raíz del repo, ver abajo)
 - [x] `catalogo/vocabularios/temas.csv` y `estados.csv`
 - [x] `catalogo/changelog/cr-adm-limites-barrios.md`
 - [x] `scripts/armar_sitio.py` + `.github/workflows/publicar.yml`
 - [x] `config.json` con `url_base` configurable
 - [x] ADR-003 corregido: el tope de GitHub Pages es 100 GB/mes, no 1 GB
-- [x] `scripts/creador_metadata.py` — ISO 19139 según el perfil IDERA v2.0
-- [x] `ide-visores/geoportal/` — página principal en tres archivos separados
+- [x] `scripts/creador_metadata.py` - ISO 19139 según el perfil IDERA v2.0
+- [x] `ide-visores/geoportal/` - página principal en tres archivos separados
 - [x] Pages activado y `publicar.yml` corrigiendo: la URL la aporta GitHub vía
       `actions/configure-pages`, no está escrita a mano en ningún archivo
 
 ### Primer dataset: pasa la validación, 0 errores y 3 avisos
 
-- [x] ~~Campo `fid`~~ — resuelto exportando desde QGIS con **`FID` = `id`**
+- [x] ~~Campo `fid`~~ - resuelto exportando desde QGIS con **`FID` = `id`**
 - [x] ~~Vocabulario de `estado`~~ y ~~`version` a SemVer~~
 - [ ] Recalcular la extensión del `.qmd`: Propiedades > Metadatos > Extensión >
       "Establecer desde la capa". Hoy guarda un valor centinela.
@@ -100,9 +100,9 @@ catalogo(adm): register cr-adm-limites-barrios
 - [ ] **Los visores de mapa** en `ide-visores/src/`. La página principal ya está.
 - [ ] **Confirmar con IDERA** cómo se incorpora el nodo: el XML ya cumple el
       perfil v2.0, falta saber si cosechan por CSW o alcanza con publicarlo.
-- [ ] **`revisar-vencidos.yml`** — marca `desactualizado` lo que venció.
+- [ ] **`revisar-vencidos.yml`** - marca `desactualizado` lo que venció.
       Requiere una columna `proxima_revision` que hoy no existe.
-- [ ] **PMTiles** — recién cuando haya una capa que lo justifique. Los 83 KB de
+- [ ] **PMTiles** - recién cuando haya una capa que lo justifique. Los 83 KB de
       barrios no lo necesitan.
 
 ## Decisiones tomadas
@@ -130,9 +130,9 @@ cuando cambia lo suyo. Conviene borrar `ide-datos/.github/` e
 `ide-visores/.github/` para que nadie deje un `.yml` ahí esperando que corra.
 
 **La URL del sitio no se escribe a mano.** `actions/configure-pages` devuelve
-`steps.pages.outputs.base_url`, que es la URL real de Pages —sirve igual para
+`steps.pages.outputs.base_url`, que es la URL real de Pages -sirve igual para
 `comodoro-mit.github.io/ide` que para un dominio propio configurado en
-Settings > Pages—. `publicar.yml` la pasa como `IDE_URL_BASE` a los pasos que
+Settings > Pages-. `publicar.yml` la pasa como `IDE_URL_BASE` a los pasos que
 la necesitan. Ojo: va en el `env:` **de cada paso**, nunca en el del job: el
 contexto `steps` no existe cuando se evalúa el `env:` de un job y saldría
 vacío. `config.json` y `vars.IDE_URL_BASE` quedan de respaldo para corridas

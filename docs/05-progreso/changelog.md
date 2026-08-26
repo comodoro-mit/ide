@@ -10,7 +10,7 @@ Formato: `## [YYYY-MM-DD] - Descripción`
 
 ### Planificado (Fase 0)
 - [ ] Diagnóstico completo del repo
-- [ ] Estructura de documentación (ADRs 001–003)
+- [ ] Estructura de documentación (ADRs 001-003)
 - [ ] Migración a repo institucional
 
 ---
@@ -20,8 +20,8 @@ Formato: `## [YYYY-MM-DD] - Descripción`
 ### Completado
 - ✅ Documentación de transición iniciada
 - ✅ Estructura de carpetas creada (`docs/01-05`)
-- ✅ ADRs 001–003 redactados (maestro GPKG, artefactos derivados, Cloudflare Pages)
-- ✅ Fases 0–5 planificadas (timeline hasta 2028-02-28)
+- ✅ ADRs 001-003 redactados (maestro GPKG, artefactos derivados, Cloudflare Pages)
+- ✅ Fases 0-5 planificadas (timeline hasta 2028-02-28)
 
 ### Estado del Repo
 - Tamaño: 38 MB (datos + .git)
@@ -32,7 +32,7 @@ Formato: `## [YYYY-MM-DD] - Descripción`
 ### Contexto
 - Proyecto de Resolución IDE-CR activo (Notas 009/25, 010/25)
 - Convenios: IDERA (2021), UNPSJB (2021), IGN (2022)
-- Restricción: presupuesto cero para Fases 0–4, ~USD 120/año para Fase 5+
+- Restricción: presupuesto cero para Fases 0-4, ~USD 120/año para Fase 5+
 - Responsables: TBD (Ver [[riesgos.md#escalada-y-autoridades](03-proceso/riesgos.md#escalada-y-autoridades)])
 
 ### Próximos Pasos (Semana del 2026-08-28)
@@ -108,7 +108,7 @@ Copiar y completar después de cada hito:
 ### Severidad de Issues
 - **CRÍTICA**: Proyecto parado, aprobación requerida para continuar
 - **ALTA**: Retraso estimado > 1 semana, requiere plan B
-- **MEDIA**: Retraso estimado 2–5 días, proceder con caution
+- **MEDIA**: Retraso estimado 2-5 días, proceder con caution
 - **BAJA**: Retraso estimado < 2 días, proceder normalmente
 
 ### Validación Obligatoria

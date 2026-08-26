@@ -52,7 +52,7 @@ Identificación de riesgos por fase, probabilidad, impacto, y plan B.
 **Descripción**: IDERA rechaza solicitud de federación porque metadatos no cumplen estándar.
 
 **Probabilidad**: Media (creador_metadata.py genera falsos)
-**Impacto**: Alto (retrasa federación 4–8 semanas)
+**Impacto**: Alto (retrasa federación 4-8 semanas)
 
 **Plan B**:
 1. Validador ISO 19115 integrado en CI antes de Fase 3
@@ -141,7 +141,7 @@ Identificación de riesgos por fase, probabilidad, impacto, y plan B.
 
 **Descripción**: Al migrar GeoJSON/JS a GPKG, se descubren duplicados, geometría inválida o atributos faltantes.
 
-**Probabilidad**: Media | **Impacto**: Medio (validación retrasa 1–2 semanas)
+**Probabilidad**: Media | **Impacto**: Medio (validación retrasa 1-2 semanas)
 
 **Plan B**:
 - Inspeccionar cada capa antes de migrar (con QGIS o `ogrinfo`)
@@ -169,7 +169,7 @@ Identificación de riesgos por fase, probabilidad, impacto, y plan B.
 
 **Descripción**: Metadatos pasan validación ISO 19115 local, pero IDERA pide cambios.
 
-**Probabilidad**: Media | **Impacto**: Alto (retrasa 4–8 semanas)
+**Probabilidad**: Media | **Impacto**: Alto (retrasa 4-8 semanas)
 
 **Plan B**:
 - Contactar IDERA con borrador antes de envío formal

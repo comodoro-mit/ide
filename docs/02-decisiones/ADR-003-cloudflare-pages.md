@@ -28,8 +28,8 @@ tráfico. Los límites publicados son:
 |---|---|---|
 | Ancho de banda | 100 GB/mes (soft) | sin tope |
 | Tamaño del sitio | **1 GB** | sin tope declarado |
-| Tamaño por archivo | — | **25 MiB** (más grande va a R2) |
-| Cantidad de archivos | — | 20.000 |
+| Tamaño por archivo | - | **25 MiB** (más grande va a R2) |
+| Cantidad de archivos | - | 20.000 |
 | Builds | 10/hora (no aplica usando Actions) | 500/mes |
 
 Los dos aprietan por lados distintos, y eso cambia el criterio de migración:
@@ -51,7 +51,7 @@ descartó a Vercel.
 
 ### Decisión
 
-**Fase 0–2: GitHub Pages**
+**Fase 0-2: GitHub Pages**
 - Costo $0 y sin cuenta nueva: se activa desde la configuración del repositorio
   que ya existe.
 
@@ -101,5 +101,5 @@ más del pipeline, no hace falta apurarla.
 - [GitHub Pages: límites de uso](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
 - [Cloudflare Pages: límites](https://developers.cloudflare.com/pages/platform/limits/)
 - [R2 Pricing](https://developers.cloudflare.com/r2/pricing/)
-- [ADR-001: GeoPackage Maestro](ADR-001-maestro-gpkg.md) — los datos detrás del visor
+- [ADR-001: GeoPackage Maestro](ADR-001-maestro-gpkg.md) - los datos detrás del visor
 - Fase 3: migración a CF Pages (condición: sitio cerca de 1 GB **o** dataset pesado)

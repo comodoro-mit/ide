@@ -1,4 +1,4 @@
-## ADR-002: Regla del Artefacto Derivado — No Commitear Generados
+## ADR-002: Regla del Artefacto Derivado - No Commitear Generados
 
 ### Estado
 
@@ -39,7 +39,7 @@ Repositorio commitea **solo**:
 ### Consecuencias
 
 ### Positivas
-- ✅ Repo baja de 38 MB a ~8–12 MB (elimina 60–70% de bloat)
+- ✅ Repo baja de 38 MB a ~8-12 MB (elimina 60-70% de bloat)
 - ✅ Una única fuente de verdad (GPKG)
 - ✅ Si alguien daña un derivado, CI lo regenera
 - ✅ Actualizaciones son atómicas: cambio GPKG, CI regenera todo
@@ -65,5 +65,5 @@ Repositorio commitea **solo**:
 
 ### Referencias
 
-- [ADR-001: GeoPackage Versionado](ADR-001-maestro-gpkg.md) — maestro de datos
+- [ADR-001: GeoPackage Versionado](ADR-001-maestro-gpkg.md) - maestro de datos
 - [Fase 1: Implementación de CI/CD](../03-proceso/fases.md#fase-1-setup-ci)

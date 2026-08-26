@@ -1,10 +1,10 @@
 ## Fases de la Transición
 
-Cronograma: 6 fases, 18 meses (agosto 2026 — febrero 2028).
+Cronograma: 6 fases, 18 meses (agosto 2026 - febrero 2028).
 
-Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
+Presupuesto: $0 para Fases 0-4, ~USD 120/año para Fase 5 en adelante.
 
-### Fase 0: Preparación (Agosto–Septiembre 2026)
+### Fase 0: Preparación (Agosto-Septiembre 2026)
 
 **Objetivo**: Diagnosticar, documentar, migrar repo a institucional.
 
@@ -18,14 +18,14 @@ Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
 
 **Entregables**:
 - Repositorio institucional (`municipalidad/ide` o equivalente)
-- README + ADRs 001–003 aprobados
+- README + ADRs 001-003 aprobados
 - Plan de deuda técnica (cinco datasets sin maestro)
 
 **Duración**: ~6 semanas
 
 ---
 
-### Fase 1: Setup CI/CD (Octubre–Noviembre 2026)
+### Fase 1: Setup CI/CD (Octubre-Noviembre 2026)
 
 **Objetivo**: Automatizar generación de derivados, validación de metadatos.
 
@@ -42,13 +42,13 @@ Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
 - `.github/workflows/build.yml` funcional
 - Derivados en GeoJSON y JS regenerados correctamente
 - Catálogo de metadatos válido (ISO 19115)
-- 38 MB repo → 12–15 MB (regla del derivado aplicada)
+- 38 MB repo → 12-15 MB (regla del derivado aplicada)
 
 **Duración**: ~8 semanas
 
 ---
 
-### Fase 2: Resolver Deuda Técnica (Diciembre 2026–Enero 2027)
+### Fase 2: Resolver Deuda Técnica (Diciembre 2026-Enero 2027)
 
 **Objetivo**: Migrar cinco datasets sin maestro (transporte, barrios) al GPKG.
 
@@ -71,7 +71,7 @@ Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
 
 ---
 
-### Fase 3: Catálogo Mejorado (Febrero–Marzo 2027)
+### Fase 3: Catálogo Mejorado (Febrero-Marzo 2027)
 
 **Objetivo**: Catálogo de metadatos conformes a IDERA, listo para federar.
 
@@ -94,7 +94,7 @@ Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
 
 ---
 
-### Fase 4: Optimización y Hardening (Abril–Mayo 2027)
+### Fase 4: Optimización y Hardening (Abril-Mayo 2027)
 
 **Objetivo**: Performance, seguridad, auditoría, documentación.
 
@@ -125,7 +125,7 @@ Presupuesto: $0 para Fases 0–4, ~USD 120/año para Fase 5 en adelante.
 - ✅ Consulta dinámica por atributo (WFS, búsqueda en visor)
 
 ### Tareas (si se necesita)
-- [ ] Provisionar VPS (4–8 GB RAM, 2 cores, ~USD 10/mes)
+- [ ] Provisionar VPS (4-8 GB RAM, 2 cores, ~USD 10/mes)
 - [ ] PostGIS en VPS
 - [ ] CI: GPKG ↔ PostGIS bidireccional (maestro sigue siendo GPKG)
 - [ ] WFS endpoint (OGC Web Feature Service)

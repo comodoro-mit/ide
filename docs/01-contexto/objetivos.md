@@ -24,7 +24,7 @@ Transformar la IDE Comodoro Rivadavia en un geoportal confiable, institucional y
   - Catálogo de metadatos (campos derivados: CRS, geometría, bbox, checksum, cantidad de registros)
 - **Aplicación**: Resolver cinco datasets sin maestro (transporte, barrios)
 
-**Resultado esperado**: Repo baja de 38 MB a ~8–12 MB. Crecimiento mono tónico elimina do.
+**Resultado esperado**: Repo baja de 38 MB a ~8-12 MB. Crecimiento mono tónico elimina do.
 
 ### 3. Generar Metadatos Conformes a Estándares
 
@@ -62,9 +62,9 @@ Transformar la IDE Comodoro Rivadavia en un geoportal confiable, institucional y
   - Más de ~50 datasets
   - Consulta dinámica por atributo
 - **Cambio mínimo**: Sincronización GPKG ↔ PostGIS por CI, maestro sigue siendo GPKG
-- **Costo**: VPS de 4–8 GB, ~USD 100–150/año (presupuesto futuro)
+- **Costo**: VPS de 4-8 GB, ~USD 100-150/año (presupuesto futuro)
 
-**Resultado esperado**: Escalabilidad probada sin perder simplicidad de Fases 0–4.
+**Resultado esperado**: Escalabilidad probada sin perder simplicidad de Fases 0-4.
 
 ## Éxito Medible
 

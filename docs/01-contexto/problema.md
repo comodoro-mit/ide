@@ -51,7 +51,7 @@ El repositorio de la IDE Comodoro Rivadavia (`agstnrdz/ide`, 38 MB) necesita una
 
 ## Impacto
 
-Sin transición, en 12–18 meses:
+Sin transición, en 12-18 meses:
 - El repositorio crece a 100+ MB (no es escalable en GitHub)
 - Los metadatos siguen siendo falsos → IDERA rechaza la federación
 - Nuevos datos se duplican automáticamente → imposible auditar

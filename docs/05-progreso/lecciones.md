@@ -13,7 +13,7 @@ Cada lección sigue:
 ```markdown
 ### Lección: [Título]
 
-**Fase**: N (0–5)
+**Fase**: N (0-5)
 
 **Contexto**: Qué pasó
 
@@ -92,7 +92,7 @@ Al migrar el dataset de transporte de GeoJSON a GPKG, descubrimos que 10% de los
 Usar al cierre de cada fase:
 
 ```markdown
-### Retrospectiva Fase N (Mes – Mes 2026/2027)
+### Retrospectiva Fase N (Mes - Mes 2026/2027)
 
 ### ¿Qué salió bien?
 
@@ -162,7 +162,7 @@ Actualizar después de cada entrada:
 
 | Lección | Fase | Categoría | Estatus |
 |---------|------|-----------|---------|
-| (Próximo) | – | – | ⏳ |
+| (Próximo) | - | - | ⏳ |
 
 ---
 

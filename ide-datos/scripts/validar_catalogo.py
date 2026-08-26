@@ -103,7 +103,7 @@ def validar_fila(fila, numero, estados, rep):
     if estado and estado not in estados:
         rep.aviso(
             ambito,
-            f"estado '{estado}' fuera del vocabulario ({', '.join(estados)}) — "
+            f"estado '{estado}' fuera del vocabulario ({', '.join(estados)}) - "
             "corregir la fila o agregarlo a catalogo/vocabularios/estados.csv",
         )
 

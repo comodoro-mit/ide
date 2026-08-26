@@ -19,7 +19,7 @@ Ese es el orden: cada uno consume lo que dejó el anterior.
 
 | Script | Entrada | Salida |
 |---|---|---|
-| `comun.py` | — | Módulo compartido: constantes, lectura `.gpkg`/`.qmd`, checksum, reproyección |
+| `comun.py` | - | Módulo compartido: constantes, lectura `.gpkg`/`.qmd`, checksum, reproyección |
 | `validar_catalogo.py` | `catalogo.csv` + maestros | Reporte y código de salida |
 | `derivar_catalogo.py` | `catalogo.csv` + maestros | `catalogo/catalogo_completo.{csv,json}` |
 | `generar_derivados.py` | maestros | `derivados/<id>.geojson` en EPSG:4326 |

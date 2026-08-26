@@ -17,7 +17,7 @@ Con presupuesto cero, no podemos confiar en free tiers de bases de datos en la n
 Un maestro de datos que el proveedor puede apagar o suspender en cualquier momento **no es un maestro confiable**. Además:
 - 23 datasets actuales (~8 MB de datos, sin duplicación)
 - Presupuesto VPS solicitado en marzo 2025 nunca se aprobó
-- Fases 0–4 deben ser 100% gratis con servicios que no se cierren
+- Fases 0-4 deben ser 100% gratis con servicios que no se cierren
 
 Alternativas descartadas:
 - PostGIS en Supabase/Neon: inestable, suspensible
@@ -42,7 +42,7 @@ PostGIS actúa como **motor de análisis**, sincronizado *desde* el GPKG por CI/
 - ✅ Maestro de datos 100% bajo control institucional (Git, repo propio)
 - ✅ Versionable: `git log` permite auditar qué cambió, cuándo y por quién
 - ✅ Recuperable: cualquier versión histórica está en Git
-- ✅ Costo: $0 para Fases 0–4 (solo GitHub)
+- ✅ Costo: $0 para Fases 0-4 (solo GitHub)
 - ✅ Portable: GPKG se abre con QGIS, ogr2ogr, libspatialite, etc.
 
 ### Negativas
@@ -72,5 +72,5 @@ PostGIS actúa como **motor de análisis**, sincronizado *desde* el GPKG por CI/
 ### Referencias
 
 - [OGC GeoPackage Standard](https://www.geopackage.org/)
-- [ADR-003: Cloudflare Pages para Host Estático](ADR-003-cloudflare-pages.md) — complementario
+- [ADR-003: Cloudflare Pages para Host Estático](ADR-003-cloudflare-pages.md) - complementario
 - Fase 5: Migración a PostGIS (condición: >50 datasets O >1 escritor concurrente O consulta dinámica)

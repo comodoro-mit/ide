@@ -126,7 +126,8 @@ def ficha_html(fila):
         (f"{comun.CARPETA_METADATOS}/{did}.xml", "Metadatos ISO", False),
     ]
     enlaces = "\n        ".join(
-        f'<a href="{ruta}"{" download" if bajar else ""}>{texto}</a>'
+        f'<a href="{ruta}"{" download" if bajar else ""}'
+        f' target="_blank" rel="noopener">{texto}</a>'
         for ruta, texto, bajar in descargas
     )
 
@@ -206,7 +207,7 @@ def main():
 
     catalogo_json = raiz / "catalogo" / "catalogo_completo.json"
     if not catalogo_json.exists():
-        print("[ERROR] falta catalogo_completo.json — correr derivar_catalogo.py")
+        print("[ERROR] falta catalogo_completo.json - correr derivar_catalogo.py")
         return 1
 
     with open(catalogo_json, encoding="utf-8") as fh:
@@ -240,7 +241,7 @@ def main():
             if not origen.exists():
                 pista = productor.get(origen.suffix, "")
                 faltantes.append(
-                    f"{did}: falta {origen.name}" + (f" — {pista}" if pista else "")
+                    f"{did}: falta {origen.name}" + (f" - {pista}" if pista else "")
                 )
                 continue
             tamano = copiar(origen, salida / relativo)
@@ -264,7 +265,7 @@ def main():
     base = comun.url_base()
     print(f"Sitio armado en {salida}")
     print(f"  {len(filas)} dataset(s), {formato_tamano(total)}")
-    print(f"  URL base: {base or '(sin definir — el catálogo omite las URLs)'}")
+    print(f"  URL base: {base or '(sin definir - el catálogo omite las URLs)'}")
 
     for fallo in faltantes:
         print(f"[ERROR] {fallo}")
