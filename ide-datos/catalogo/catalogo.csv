@@ -1,2 +1,3 @@
 "id","titulo","descripcion","responsable","estado","categoria","version","frecuencia_actualizacion","notas_internas"
 "cr-adm-limites-barrios","Límites de barrios","Límites oficiales de barrios de la ciudad de Comodoro Rivadavia, Chubut, Argentina.","rodriguez","publicado","adm","1.0.0","",""
+"cr-equ-espacios-verdes","Espacios verdes","Espacios verdes de la ciudad de Comodoro Rivadavia, Chubut, Argentina.","rodriguez","publicado","equ","1.0.0","",""
