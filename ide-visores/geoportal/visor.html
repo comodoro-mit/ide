@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDE Comodoro Rivadavia</title>
+<meta name="description" content="Visor de mapas de la Infraestructura de Datos Espaciales de Comodoro Rivadavia. Capas oficiales sobre mapas base de OpenStreetMap, Argenmap del IGN y Esri.">
+<meta name="theme-color" content="#134768">
+<link rel="icon" type="image/png" href="img/logotipo_icono.png">
+<link rel="apple-touch-icon" href="img/logotipo_icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<!--{{ENCABEZADO}}-->
+
+<section class="portada portada-interior">
+  <div class="contenedor">
+    <h1>Visor de mapas</h1>
+    <p class="bajada">Explorar las capas oficiales del municipio sobre distintos mapas base, sin instalar nada.</p>
+  </div>
+</section>
+
+<main class="visor-ancho">
+
+  <div class="visor">
+    <aside class="panel">
+      <h2>Capas</h2>
+      <!--{{CAPAS}}-->
+      <p class="nota-visor">
+        El visor necesita JavaScript. El catálogo completo y las descargas
+        están en <a href="datasets.html">Datasets</a>.
+      </p>
+    </aside>
+
+    <div class="lienzo">
+      <div class="mapa" id="mapa"></div>
+      <div class="ctrl ctrl-zoom" id="zoom" hidden>
+        <button type="button" id="acercar" title="Acercar">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M10 4v12M4 10h12"/>
+            </svg>
+          </span>
+          <span class="visualmente-oculto">Acercar</span>
+        </button>
+        <button type="button" id="alejar" title="Alejar">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 10h12"/>
+            </svg>
+          </span>
+          <span class="visualmente-oculto">Alejar</span>
+        </button>
+        <button type="button" id="encuadre" title="Ver toda la ciudad">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path d="M4 7V4h3M13 4h3v3M16 13v3h-3M7 16H4v-3"/>
+            </svg>
+          </span>
+          <span class="visualmente-oculto">Ver toda la ciudad</span>
+        </button>
+      </div>
+
+      <div class="ctrl mando" id="mando" hidden>
+        <button type="button" id="modo" aria-pressed="false" title="Modo oscuro">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+              <path d="M16 11.7A6.5 6.5 0 0 1 8.3 4a6.5 6.5 0 1 0 7.7 7.7z"/>
+            </svg>
+          </span>
+          <span class="visualmente-oculto">Modo oscuro</span>
+        </button>
+        <button type="button" class="ancho" id="base" aria-pressed="false">
+          <span id="base-texto">Satelital</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="creditos" id="creditos"></p>
+
+</main>
+
+<!--{{PIE}}-->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="visor.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
