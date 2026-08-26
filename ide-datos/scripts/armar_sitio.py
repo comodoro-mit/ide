@@ -10,7 +10,7 @@ This script copies and indexes; it never converts. Run the pipeline first:
 Result:
 
     sitio/
-      index.html                  the geoportal template, filled in
+      index.html y las subpaginas the geoportal templates, filled in
       estilos.css, app.js         copied from ide-visores/geoportal/
       img/*.png                   logo and favicon, same origin
       catalogo.csv, catalogo.json the full catalogue
@@ -67,7 +67,8 @@ def limpiar(salida):
             carpeta = salida / nombre
             if carpeta.is_dir():
                 shutil.rmtree(carpeta)
-        sueltos = ("index.html", "catalogo.csv", "catalogo.json") + ARCHIVOS_GEOPORTAL
+        paginas = tuple(p.name for p in paginas_geoportal())
+        sueltos = paginas + ("catalogo.csv", "catalogo.json") + ARCHIVOS_GEOPORTAL
         for nombre in sueltos:
             archivo = salida / nombre
             if archivo.is_file():
@@ -105,6 +106,7 @@ MARCA_FIN = "<!--{{FICHAS_FIN}}-->"
 ARCHIVOS_GEOPORTAL = (
     "estilos.css",
     "app.js",
+    "visor.js",
     "img/logotipo.png",
     "img/logotipo_icono.png",
     "img/hero_background.png",
@@ -131,34 +133,97 @@ def ficha_html(fila):
         for ruta, texto, bajar in descargas
     )
 
-    return f"""    <article class="ficha">
+    tema = fila.get("tema", "")
+    nombre_tema = html.escape(comun.NOMBRES_TEMA.get(tema, ""))
+
+    return f"""    <article class="ficha" data-tema="{html.escape(tema)}">
+      <span class="etiqueta">{nombre_tema}</span>
       <h2><span class="titulo">{campo('titulo')}</span></h2>
       <p class="descripcion">{campo('descripcion')}</p>
       <dl>
-        <dt>Tema</dt><dd>{html.escape(comun.NOMBRES_TEMA.get(fila.get("tema", ""), ""))}</dd>
+        <dt>Tema</dt><dd>{nombre_tema}</dd>
         <dt>Identificador</dt><dd><code>{did}</code></dd>
         <dt>Registros</dt><dd>{campo('cantidad_registros')}</dd>
         <dt>Geometría</dt><dd>{campo('tipo_geometria')}</dd>
-        <dt>Sistema de referencia</dt><dd>{campo('crs')}</dd>
-        <dt>Versión</dt><dd>{campo('version')}</dd>
-        <dt>Licencia</dt><dd>{campo('licencia')}</dd>
         <dt>Actualizado</dt><dd>{campo('fecha_modificacion')[:10]}</dd>
       </dl>
+      <details class="mas">
+        <summary>Ver detalles</summary>
+        <dl>
+          <dt>Sistema de referencia</dt><dd>{campo('crs')}</dd>
+          <dt>Versión</dt><dd>{campo('version')}</dd>
+          <dt>Licencia</dt><dd>{campo('licencia')}</dd>
+        </dl>
+      </details>
       <div class="descargas">
         {enlaces}
       </div>
     </article>"""
 
 
-def escribir_indice(filas, salida, fecha):
-    """Fill the geoportal template with the catalogue and write it out."""
-    plantilla = ruta_geoportal() / "index.html"
-    if not plantilla.exists():
-        raise FileNotFoundError(
-            f"falta la plantilla {plantilla}. El geoportal vive en "
-            "ide-visores/geoportal/, no en este script."
-        )
+def filtros_html(filas):
+    """Theme chips, built from the catalogue: never a chip without datasets."""
+    if not filas:
+        return ""
+    conteo = {}
+    for fila in filas:
+        tema = fila.get("tema", "")
+        conteo[tema] = conteo.get(tema, 0) + 1
 
+    botones = [
+        '        <button type="button" class="chip" data-tema="" '
+        f'aria-pressed="true">Todos <span class="cuenta">{len(filas)}</span></button>'
+    ]
+    # Alphabetical by label, so the order does not shift as data is added.
+    for tema in sorted(conteo, key=lambda t: comun.NOMBRES_TEMA.get(t, t)):
+        etiqueta = html.escape(comun.NOMBRES_TEMA.get(tema, tema))
+        botones.append(
+            f'        <button type="button" class="chip" data-tema="{html.escape(tema)}" '
+            f'aria-pressed="false">{etiqueta} <span class="cuenta">{conteo[tema]}</span></button>'
+        )
+    return (
+        '      <nav class="filtros" id="filtros" aria-label="Filtrar por tema" hidden>\n'
+        + "\n".join(botones)
+        + "\n      </nav>"
+    )
+
+
+def capas_html(filas):
+    """Layer switches for the viewer, one per published dataset."""
+    if not filas:
+        return '      <p class="nota-visor">Todavía no hay capas publicadas.</p>'
+
+    grupos = {}
+    for fila in filas:
+        grupos.setdefault(fila.get("tema", ""), []).append(fila)
+
+    bloques = []
+    for tema in sorted(grupos, key=lambda t: comun.NOMBRES_TEMA.get(t, t)):
+        bloques.append(
+            f'        <li class="grupo">{html.escape(comun.NOMBRES_TEMA.get(tema, tema))}</li>'
+        )
+        for fila in sorted(grupos[tema], key=lambda f: f.get("titulo", "")):
+            did = html.escape(str(fila.get("id", "")))
+            bloques.append(
+                f'        <li class="capa">\n'
+                f'          <label>\n'
+                f'            <input type="checkbox" value="{did}"\n'
+                f'                   data-geojson="{comun.CARPETA_DATOS}/{did}.geojson"\n'
+                f'                   data-bbox="{html.escape(str(fila.get("bbox_4326", "")))}">\n'
+                f'            <span>{html.escape(str(fila.get("titulo", "")))}</span>\n'
+                f'          </label>\n'
+                f'        </li>'
+            )
+    return '      <ul class="capas">\n' + "\n".join(bloques) + "\n      </ul>"
+
+
+def paginas_geoportal():
+    """Every .html at the root of geoportal/. Partials live in partes/."""
+    return sorted(ruta_geoportal().glob("*.html"))
+
+
+def armar_pagina(plantilla, filas, fecha):
+    """Assemble one page: partials, current tab, cards and placeholders."""
     documento = plantilla.read_text(encoding="utf-8")
 
     for marca, archivo in PARTES.items():
@@ -169,27 +234,48 @@ def escribir_indice(filas, salida, fecha):
             raise FileNotFoundError(f"falta la parte {parte}")
         documento = documento.replace(marca, parte.read_text(encoding="utf-8").strip())
 
-    for marca in (MARCA_INICIO, MARCA_FIN):
-        if marca not in documento:
-            raise ValueError(f"la plantilla no tiene el marcador {marca}")
+    # The header is shared, so the active tab cannot be written into it. It is
+    # marked here, once per page, by matching the link to the file being built.
+    enlace = f'<a href="{plantilla.name}"'
+    documento = documento.replace(enlace, enlace + ' aria-current="page"', 1)
 
-    inicio = documento.index(MARCA_INICIO) + len(MARCA_INICIO)
-    fin = documento.index(MARCA_FIN)
-    fichas = "\n".join(ficha_html(f) for f in filas)
-    documento = documento[:inicio] + "\n" + fichas + "\n" + documento[fin:]
+    # Cards go wherever the markers are. Today that is index.html; moving the
+    # catalogue to datasets.html means moving the marker block, nothing else.
+    if MARCA_INICIO in documento:
+        if MARCA_FIN not in documento:
+            raise ValueError(f"{plantilla.name}: falta el marcador {MARCA_FIN}")
+        inicio = documento.index(MARCA_INICIO) + len(MARCA_INICIO)
+        fin = documento.index(MARCA_FIN)
+        fichas = "\n".join(ficha_html(f) for f in filas)
+        documento = documento[:inicio] + "\n" + fichas + "\n" + documento[fin:]
 
-    cantidad = len(filas)
-    documento = documento.replace("{{CANTIDAD}}", str(cantidad))
+    documento = documento.replace("<!--{{FILTROS}}-->", filtros_html(filas))
+    documento = documento.replace("<!--{{CAPAS}}-->", capas_html(filas))
+    documento = documento.replace("{{CANTIDAD}}", str(len(filas)))
     documento = documento.replace("{{FECHA}}", fecha)
+    return documento
 
-    (salida / "index.html").write_text(documento, encoding="utf-8")
 
-    total = (salida / "index.html").stat().st_size
+def escribir_paginas(filas, salida, fecha):
+    """Build every page of the geoportal and copy its static assets."""
+    plantillas = paginas_geoportal()
+    if not plantillas:
+        raise FileNotFoundError(
+            f"no hay ninguna plantilla en {ruta_geoportal()}. El geoportal vive "
+            "en ide-visores/geoportal/, no en este script."
+        )
+
+    total = 0
+    for plantilla in plantillas:
+        destino = salida / plantilla.name
+        destino.write_text(armar_pagina(plantilla, filas, fecha), encoding="utf-8")
+        total += destino.stat().st_size
+
     for nombre in ARCHIVOS_GEOPORTAL:
         origen = ruta_geoportal() / nombre
         if origen.exists():
             total += copiar(origen, salida / nombre)
-    return total
+    return total, [p.name for p in plantillas]
 
 
 # --- driver ----------------------------------------------------------------
@@ -257,7 +343,10 @@ def main():
     import datetime
 
     try:
-        total += escribir_indice(filas, salida, datetime.date.today().isoformat())
+        peso, paginas = escribir_paginas(
+            filas, salida, datetime.date.today().isoformat()
+        )
+        total += peso
     except (FileNotFoundError, ValueError) as exc:
         print(f"[ERROR] {exc}")
         return 1
@@ -265,6 +354,7 @@ def main():
     base = comun.url_base()
     print(f"Sitio armado en {salida}")
     print(f"  {len(filas)} dataset(s), {formato_tamano(total)}")
+    print(f"  {len(paginas)} pagina(s): {', '.join(paginas)}")
     print(f"  URL base: {base or '(sin definir - el catálogo omite las URLs)'}")
 
     for fallo in faltantes:
