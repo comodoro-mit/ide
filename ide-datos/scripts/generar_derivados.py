@@ -151,9 +151,10 @@ def wkb_a_geojson(blob, proyectar):
 
 def _area_con_signo(anillo):
     """Shoelace area. Positive means counterclockwise."""
+    # Index instead of unpacking: a 3D ring would raise on (x, y) unpacking.
     total = 0.0
-    for (x1, y1), (x2, y2) in zip(anillo, anillo[1:]):
-        total += (x2 - x1) * (y2 + y1)
+    for actual, siguiente in zip(anillo, anillo[1:]):
+        total += (siguiente[0] - actual[0]) * (siguiente[1] + actual[1])
     return -total / 2.0
 
 
@@ -217,6 +218,9 @@ def generar_con_ogr2ogr(gpkg, destino):
             "-s_srs", comun.PROJ4_MAESTRO,
             "-t_srs", f"EPSG:{comun.CRS_PUBLICACION}",
             "-lco", f"COORDINATE_PRECISION={DECIMALES}",
+            # Drop Z/M. The python engine reads 2D only, so without this a
+            # layer with elevation would come out different from each engine.
+            "-dim", "XY",
             "-overwrite",
         ],
         check=True,
