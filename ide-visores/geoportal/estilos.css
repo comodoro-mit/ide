@@ -170,10 +170,68 @@ main { flex: 1 0 auto; }
   font-weight: 600;
 }
 
-/* Inner pages: shorter hero, no backdrop. The image belongs to the home. */
+/* Inner pages: shorter hero, no backdrop. The image belongs to the home.
+   Title and standfirst are left aligned here; the home hero stays centred. */
 .portada-interior { padding: 2.25rem 0 1.75rem; }
 .portada-interior::before { content: none; }
-.portada-interior h1 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); }
+.portada-interior h1 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); text-align: left; }
+.portada-interior .bajada { text-align: left; }
+
+/* --- map popups --- */
+
+/* Colours stay neutral for now: the layer palette per light/dark/satellite
+   mode is still being decided, and the popup should follow it later. */
+.leaflet-popup-content {
+  margin: .75rem .9rem;
+  font-size: .75rem;
+  line-height: 1.35;
+}
+
+/* Leaflet ships `.leaflet-popup-content p { margin: 1.3em 0 }`, which is more
+   specific than a bare class and wins no matter the load order. Both lines of
+   the header are <p>, so they were carrying 1.3em of dead space above and
+   below. These two rules are scoped to beat it; keep the prefix if you move
+   them. */
+.leaflet-popup-content .popup-capa {
+  margin: 0;
+  font-size: .6rem;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--chip-tema);
+}
+
+.leaflet-popup-content .popup-nombre {
+  margin: .15rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--marca);
+}
+
+.popup-datos {
+  margin-top: .50rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.popup-datos th,
+.popup-datos td {
+  padding: .2rem 0;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--linea);
+}
+
+.popup-datos th {
+  padding-right: .8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--chip-tema);
+}
+
+.popup-datos tr:first-child th,
+.popup-datos tr:first-child td { border-top: 0; }
 
 /* --- control bar --- */
 
@@ -466,6 +524,12 @@ main { flex: 1 0 auto; }
 }
 
 .ctrl svg { display: block; }
+
+/* Mode button: the icon shows what the click will do, not the current state.
+   Moon while the map is light, sun while it is dark. Same pair as the
+   transporte-demo viewer. */
+#modo[aria-pressed="true"] .icono-luna { display: none; }
+#modo[aria-pressed="false"] .icono-sol { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .ctrl button { transition: none; }
