@@ -327,8 +327,14 @@ def main():
     for fila in filas:
         did = fila["id"]
         tema = comun.tema_de(did)
+        # A dataset with reserved attributes publishes the sanitised copy that
+        # generar_derivados.py wrote, never the master: the master still holds
+        # the columns the catalogue must not republish.
+        maestro = comun.ruta_maestro(did, tema, "gpkg")
+        if comun.campos_reservados(did):
+            maestro = raiz / "derivados" / f"{did}.gpkg"
         piezas = [
-            (comun.ruta_maestro(did, tema, "gpkg"), f"{comun.CARPETA_DATOS}/{did}.gpkg"),
+            (maestro, f"{comun.CARPETA_DATOS}/{did}.gpkg"),
             (comun.ruta_maestro(did, tema, "qmd"), f"{comun.CARPETA_METADATOS}/{did}.qmd"),
             (raiz / "derivados" / f"{did}.geojson", f"{comun.CARPETA_DATOS}/{did}.geojson"),
             (
@@ -339,7 +345,8 @@ def main():
         # Cada pieza faltante nombra el script que la produce: el mensaje
         # aparece en un log de CI, donde no hay nadie para deducirlo.
         productor = {
-            ".gpkg": "es el maestro, tiene que estar en maestros/",
+            ".gpkg": "es el maestro (o su copia saneada en derivados/, si el "
+                     "dataset declara campos reservados en comun.py)",
             ".qmd": "es el sidecar del maestro, tiene que estar en maestros/",
             ".geojson": "lo genera generar_derivados.py",
             ".xml": "lo genera creador_metadata.py",
@@ -372,14 +379,23 @@ def main():
         print(f"[ERROR] {exc}")
         return 1
 
-    base = comun.url_base()
-    print(f"Sitio armado en {salida}")
-    print(f"  {len(filas)} dataset(s), {formato_tamano(total)}")
-    print(f"  {len(paginas)} pagina(s): {', '.join(paginas)}")
-    print(f"  URL base: {base or '(sin definir - el catálogo omite las URLs)'}")
-
+    # Failures print BEFORE the summary. They used to print after it, under a
+    # cheerful "Sitio armado en ..." line, and a missing GeoJSON went unnoticed
+    # while the panel kept advertising a layer the viewer could not fetch.
     for fallo in faltantes:
         print(f"[ERROR] {fallo}")
+    if faltantes:
+        print()
+
+    base = comun.url_base()
+    estado = "Sitio armado INCOMPLETO en" if faltantes else "Sitio armado en"
+    print(f"{estado} {salida}")
+    publicados = len(filas) - len({f.split(":")[0] for f in faltantes})
+    print(f"  {publicados} de {len(filas)} dataset(s) completo(s), {formato_tamano(total)}")
+    print(f"  {len(paginas)} pagina(s): {', '.join(paginas)}")
+    print(f"  URL base: {base or '(sin definir - el catálogo omite las URLs)'}")
+    if faltantes:
+        print("  faltan piezas: ver los [ERROR] de arriba, el sitio no está listo")
 
     for relativo, tamano in grandes:
         print(
