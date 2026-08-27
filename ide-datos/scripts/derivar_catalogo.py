@@ -69,7 +69,12 @@ def derivar(fila):
     tiene_bbox = all(v is not None for v in bbox)
     raiz = comun.raiz_datos()
 
-    campos = [c for c in info["nombres_campos"] if c != info["columna_geom"]]
+    reservados = comun.campos_reservados(did)
+    campos = [
+        c
+        for c in info["nombres_campos"]
+        if c != info["columna_geom"] and c not in reservados
+    ]
 
     derivado = {
         "tema": tema,

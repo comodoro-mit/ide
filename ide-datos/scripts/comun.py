@@ -166,6 +166,32 @@ def ruta_maestro(dataset_id, tema, extension):
     return raiz_datos() / "maestros" / tema / f"{dataset_id}.{extension}"
 
 
+# Attributes that must never leave the municipality, per dataset.
+#
+# A master layer may legitimately hold data that the open catalogue must not
+# republish. The phone numbers of the people who chair the neighbourhood
+# associations are the case that created this: useful inside the municipality,
+# personal data of private citizens once published under CC BY 4.0.
+#
+# Declared here and only here, so every script strips the same fields:
+#   generar_derivados.py  leaves them out of the GeoJSON and writes a
+#                         sanitised GeoPackage next to it
+#   armar_sitio.py        publishes that sanitised copy, never the master
+#   derivar_catalogo.py   leaves them out of the `campos` column, so the
+#                         published catalogue does not even name them
+#
+# The master keeps the column: this hides the field from what is published, it
+# does not delete anything from the source of truth.
+CAMPOS_RESERVADOS = {
+    "cr-equ-asociaciones-vecinales": ("tel",),
+}
+
+
+def campos_reservados(dataset_id):
+    """Attributes of this dataset that must not be published. Never None."""
+    return tuple(CAMPOS_RESERVADOS.get(dataset_id, ()))
+
+
 # Layout of the published site. derivar_catalogo.py builds the URLs and
 # armar_sitio.py writes the files, both from here, so they cannot drift apart.
 CARPETA_DATOS = "datos"
