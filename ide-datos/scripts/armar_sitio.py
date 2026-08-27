@@ -188,6 +188,28 @@ def filtros_html(filas):
     )
 
 
+# Panel order inside a theme: points first, then lines, then polygons. Small
+# geometries sit on top of large ones on the map, so this puts the switches in
+# the same order as what the eye finds: a point is easy to lose under a
+# polygon, and the user reaches for it first.
+ORDEN_GEOMETRIA = ("POINT", "LINESTRING", "POLYGON")
+
+
+def rango_geometria(tipo):
+    """Where a geometry type sits in the panel. Unknown types go last."""
+    tipo = str(tipo or "").upper()
+    for posicion, familia in enumerate(ORDEN_GEOMETRIA):
+        # MULTIPOINT ranks with POINT, MULTIPOLYGON with POLYGON, and so on.
+        if familia in tipo:
+            return posicion
+    return len(ORDEN_GEOMETRIA)
+
+
+def clave_panel(fila):
+    """Sort key for the panel: geometry family first, then title."""
+    return (rango_geometria(fila.get("tipo_geometria")), str(fila.get("titulo", "")))
+
+
 def capas_html(filas):
     """Layer switches for the viewer, one per published dataset."""
     if not filas:
@@ -202,14 +224,13 @@ def capas_html(filas):
         bloques.append(
             f'        <li class="grupo">{html.escape(comun.NOMBRES_TEMA.get(tema, tema))}</li>'
         )
-        for fila in sorted(grupos[tema], key=lambda f: f.get("titulo", "")):
+        for fila in sorted(grupos[tema], key=clave_panel):
             did = html.escape(str(fila.get("id", "")))
             bloques.append(
                 f'        <li class="capa">\n'
                 f'          <label>\n'
                 f'            <input type="checkbox" value="{did}"\n'
-                f'                   data-geojson="{comun.CARPETA_DATOS}/{did}.geojson"\n'
-                f'                   data-bbox="{html.escape(str(fila.get("bbox_4326", "")))}">\n'
+                f'                   data-geojson="{comun.CARPETA_DATOS}/{did}.geojson">\n'
                 f'            <span>{html.escape(str(fila.get("titulo", "")))}</span>\n'
                 f'          </label>\n'
                 f'        </li>'
