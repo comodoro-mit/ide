@@ -11,7 +11,7 @@
   var contenedor = document.getElementById("mapa");
   if (!contenedor || typeof window.L === "undefined") return;
 
-  var CENTRO = [-45.864, -67.496];
+  var CENTRO = [-45.846, -67.496];
   var ZOOM = 12;
 
   var CREDITO_IGN =
@@ -46,6 +46,9 @@
     satelital: { color: "#ffd166", fillColor: "#ffd166" }
   };
 
+  // The opening view is the whole city and it stays put. Turning a layer on
+  // never re-frames the map: only the user moves it, by panning, zooming, or
+  // pressing the reset button.
   var mapa = L.map(contenedor, {
     center: CENTRO,
     zoom: ZOOM,
@@ -86,7 +89,94 @@
     repintarCapas(TRAZOS[modo]);
   }
 
+  // --- popups
+
+  /* Every field shows by default. A layer published tomorrow gets a working
+   * popup with nothing to configure, which is the point: a whitelist would
+   * have to be maintained per layer, and there is no field common to all of
+   * them anyway (playones has no `nombre`).
+   *
+   * Three rules keep that from looking raw, and none of them is layer
+   * specific.
+   */
+
+  // 1. Internal keys, plus the coordinates: the map is already showing you
+  //    where the thing is.
+  var OCULTOS = ["id", "fid", "latitud", "longitud"];
+
+  // 2. One global dictionary, not one per layer: "barrio" means the same in
+  //    every dataset. A field with no entry here falls back to its own column
+  //    name, so an unknown field degrades instead of disappearing.
+  var ALIAS = {
+    nombre: "Nombre",
+    tipo: "Tipo",
+    cat: "Categoría",
+    barrio: "Barrio",
+    calle: "Calle",
+    interseccion: "Intersección",
+    obs: "Observaciones",
+    area_m2: "Superficie",
+    zona: "Zona",
+    circ: "Circunscripción",
+    sector: "Sector"
+  };
+
+  /* The one per layer override, and it is optional: a layer with no entry
+   * here still gets a working popup. Only for fields that are meaningless to
+   * the public, never to tidy a layer that simply has many fields.
+   */
+  var OCULTOS_POR_CAPA = {
+    // Internal cadastral codes. Bare numbers with no legend to read them by,
+    // and this is the base layer: the name is the whole point.
+    "cr-adm-limites-barrios": ["zona", "circ", "sector"]
+  };
+
+  // 3. Empty is judged per feature, not per field: a playón with no remarks
+  //    drops the row, one with remarks keeps it.
+  function vacio(valor) {
+    return valor === null || valor === undefined || String(valor).trim() === "";
+  }
+
+  function formatear(campo, valor) {
+    if (campo === "area_m2" && isFinite(valor)) {
+      return Number(valor).toLocaleString("es-AR", { maximumFractionDigits: 0 }) + " m²";
+    }
+    return String(valor);
+  }
+
+  var ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+
+  function escapar(texto) {
+    return String(texto).replace(/[&<>"]/g, function (c) { return ESCAPES[c]; });
+  }
+
+  /* The heading is the layer name, never a guessed field: with several layers
+   * on at once, the first thing to answer is which one was clicked. The
+   * feature's own `nombre` goes under it when it has one.
+   */
+  function popupHtml(propiedades, tituloCapa, idCapa) {
+    propiedades = propiedades || {};
+    var omitir = OCULTOS.concat(OCULTOS_POR_CAPA[idCapa] || []);
+    var cabecera = '<p class="popup-capa">' + escapar(tituloCapa) + "</p>";
+
+    if (!vacio(propiedades.nombre)) {
+      cabecera += '<p class="popup-nombre">' + escapar(propiedades.nombre) + "</p>";
+      omitir.push("nombre");
+    }
+
+    var filas = Object.keys(propiedades).filter(function (campo) {
+      return omitir.indexOf(campo.toLowerCase()) === -1 && !vacio(propiedades[campo]);
+    }).map(function (campo) {
+      return '<tr><th scope="row">' + escapar(ALIAS[campo] || campo) + "</th>" +
+             "<td>" + escapar(formatear(campo, propiedades[campo])) + "</td></tr>";
+    });
+
+    if (!filas.length) return cabecera;
+    return cabecera + '<table class="popup-datos"><tbody>' + filas.join("") + "</tbody></table>";
+  }
+
   // --- catalogue layers
+
 
   var cargadas = {};
 
@@ -111,7 +201,6 @@
 
     if (cargadas[id]) {
       cargadas[id].addTo(mapa);
-      encuadrar(cargadas[id].getBounds());
       return;
     }
 
@@ -123,8 +212,15 @@
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (datos) {
         var trazo = TRAZOS[modoActual()];
+        var etiqueta = fila ? fila.querySelector("span") : null;
+        var titulo = etiqueta ? etiqueta.textContent.trim() : id;
         var capa = L.geoJSON(datos, {
           style: estilo(trazo),
+          onEachFeature: function (rasgo, sector) {
+            sector.bindPopup(function () {
+              return popupHtml(rasgo.properties, titulo, id);
+            }, { maxWidth: 320, minWidth: 200 });
+          },
           pointToLayer: function (_, punto) {
             return L.circleMarker(punto, {
               radius: 4,
@@ -137,10 +233,7 @@
         });
         cargadas[id] = capa;
         // The user may have unchecked it while it was downloading.
-        if (entrada.checked) {
-          capa.addTo(mapa);
-          encuadrar(capa.getBounds());
-        }
+        if (entrada.checked) capa.addTo(mapa);
       })
       .catch(function () {
         entrada.checked = false;
@@ -154,15 +247,6 @@
 
   function apagar(id) {
     if (cargadas[id]) mapa.removeLayer(cargadas[id]);
-  }
-
-  // Only zoom when a single layer is on: with several, moving the map every
-  // time one is added fights whatever the user was looking at.
-  function encuadrar(caucion) {
-    if (!caucion || !caucion.isValid()) return;
-    if (document.querySelectorAll(".capa input:checked").length === 1) {
-      mapa.fitBounds(caucion, { padding: [24, 24] });
-    }
   }
 
   // --- controls
@@ -192,7 +276,11 @@
     botonModo.addEventListener("click", function () {
       oscuro = !oscuro;
       botonModo.setAttribute("aria-pressed", String(oscuro));
-      botonModo.title = oscuro ? "Modo claro" : "Modo oscuro";
+      var rotulo = oscuro ? "Modo claro" : "Modo oscuro";
+      botonModo.title = rotulo;
+      // Keep the screen reader label in step with the icon and the tooltip.
+      var oculto = botonModo.querySelector(".visualmente-oculto");
+      if (oculto) oculto.textContent = rotulo;
       // The moon only means anything over the Argenmap base.
       botonModo.disabled = satelital;
       pintarBase();
