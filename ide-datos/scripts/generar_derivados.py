@@ -27,6 +27,7 @@ import sqlite3
 import struct
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -206,10 +207,20 @@ def normalizar_propiedades(entidad):
         propiedades[campo] = limpio or None
 
 
-def escribir_coleccion(entidades, destino):
+def quitar_reservados(entidad, reservados):
+    """Drop the attributes this dataset must not publish."""
+    propiedades = entidad.get("properties")
+    if not isinstance(propiedades, dict):
+        return
+    for campo in reservados:
+        propiedades.pop(campo, None)
+
+
+def escribir_coleccion(entidades, destino, reservados=()):
     for entidad in entidades:
         normalizar_geometria(entidad.get("geometry"))
         normalizar_propiedades(entidad)
+        quitar_reservados(entidad, reservados)
     with open(destino, "w", encoding="utf-8") as fh:
         json.dump(
             {"type": "FeatureCollection", "features": entidades},
@@ -219,6 +230,78 @@ def escribir_coleccion(entidades, destino):
     return len(entidades)
 
 
+def gpkg_saneado(gpkg, destino, reservados):
+    """Write a copy of the master GeoPackage without the reserved columns.
+
+    The published .gpkg used to be a straight copy of the master, so dropping a
+    field from the GeoJSON alone would have left it in the file most GIS users
+    download. armar_sitio.py publishes this copy instead.
+
+    The whole edit happens in a scratch directory and only a copy that passed
+    the check is moved into place. An earlier version copied the master to the
+    destination first and edited it there: when the edit failed, the untouched
+    copy stayed behind and got published with the reserved columns intact.
+    Never leave a half-sanitised file where the publisher will find it.
+
+    ALTER TABLE ... DROP COLUMN needs SQLite 3.35 (2021). Only reads,
+    ALTER TABLE and VACUUM are safe on a .gpkg from plain python: an UPDATE
+    fires the feature-count triggers, which call ST_IsEmpty, a function the
+    stdlib sqlite3 does not carry.
+    """
+    if sqlite3.sqlite_version_info < (3, 35, 0):
+        raise RuntimeError(
+            f"sqlite {sqlite3.sqlite_version} no soporta DROP COLUMN; hace "
+            "falta 3.35 o mayor para publicar un GeoPackage saneado"
+        )
+
+    destino = Path(destino)
+    taller = Path(tempfile.mkdtemp(prefix="gpkg-saneado-"))
+    try:
+        copia = taller / destino.name
+        shutil.copy2(gpkg, copia)
+
+        con = sqlite3.connect(copia)
+        try:
+            tabla = con.execute(
+                "SELECT table_name FROM gpkg_contents WHERE data_type='features'"
+            ).fetchone()[0]
+            presentes = {c[1] for c in con.execute(f'PRAGMA table_info("{tabla}")')}
+            quitadas = [c for c in reservados if c in presentes]
+            for campo in quitadas:
+                con.execute(f'ALTER TABLE "{tabla}" DROP COLUMN "{campo}"')
+            con.commit()
+            con.execute("VACUUM")
+        finally:
+            con.close()
+
+        # Read the finished file back before trusting it.
+        con = sqlite3.connect(f"file:{copia.as_posix()}?mode=ro", uri=True)
+        try:
+            quedan = {c[1] for c in con.execute(f'PRAGMA table_info("{tabla}")')}
+        finally:
+            con.close()
+        sobrantes = sorted(set(reservados) & quedan)
+        if sobrantes:
+            raise RuntimeError(f"la copia todavía tiene {sobrantes}")
+
+        shutil.copy2(copia, destino)
+        return quitadas
+    except Exception:
+        # A stale copy from an earlier run would be published as if it were
+        # current, so it must not survive a failure.
+        if destino.exists():
+            try:
+                destino.unlink()
+            except OSError as exc:
+                raise RuntimeError(
+                    f"falló el saneado y no se pudo borrar {destino}: {exc}. "
+                    "Borralo a mano antes de publicar"
+                ) from None
+        raise
+    finally:
+        shutil.rmtree(taller, ignore_errors=True)
+
+
 # --- backends --------------------------------------------------------------
 
 
@@ -226,7 +309,7 @@ def hay_ogr2ogr():
     return shutil.which("ogr2ogr") is not None
 
 
-def generar_con_ogr2ogr(gpkg, destino):
+def generar_con_ogr2ogr(gpkg, destino, reservados=()):
     # -s_srs restates the master projection without a datum, so PROJ does not
     # insert the POSGAR 2007 -> WGS 84 shift. See comun.PROJ4_MAESTRO.
     subprocess.run(
@@ -251,10 +334,10 @@ def generar_con_ogr2ogr(gpkg, destino):
     # and JSON formatting do not depend on which engine ran.
     with open(destino, encoding="utf-8") as fh:
         entidades = json.load(fh)["features"]
-    return escribir_coleccion(entidades, destino)
+    return escribir_coleccion(entidades, destino, reservados)
 
 
-def generar_con_python(gpkg, destino):
+def generar_con_python(gpkg, destino, reservados=()):
     info = comun.leer_gpkg(gpkg)
     if info["srs_id"] != comun.CRS_MAESTRO:
         raise ValueError(
@@ -284,7 +367,7 @@ def generar_con_python(gpkg, destino):
     finally:
         con.close()
 
-    return escribir_coleccion(entidades, destino)
+    return escribir_coleccion(entidades, destino, reservados)
 
 
 # --- driver ----------------------------------------------------------------
@@ -337,12 +420,13 @@ def main():
             fallos.append(f"{did}: no existe {gpkg.name}")
             continue
 
+        reservados = comun.campos_reservados(did)
         destino = salida / f"{did}.geojson"
         try:
             if motor == "ogr2ogr":
-                cantidad = generar_con_ogr2ogr(gpkg, destino)
+                cantidad = generar_con_ogr2ogr(gpkg, destino, reservados)
             else:
-                cantidad = generar_con_python(gpkg, destino)
+                cantidad = generar_con_python(gpkg, destino, reservados)
         except subprocess.CalledProcessError as exc:
             fallos.append(f"{did}: ogr2ogr falló: {exc.stderr.strip()}")
             continue
@@ -353,6 +437,15 @@ def main():
         tamano = destino.stat().st_size
         print(f"  {destino.name}: {cantidad} entidades, {tamano // 1024} KB")
         generados += 1
+
+        if reservados:
+            copia = salida / f"{did}.gpkg"
+            try:
+                quitadas = gpkg_saneado(gpkg, copia, reservados)
+            except Exception as exc:  # noqa: BLE001
+                fallos.append(f"{did}: no se pudo sanear el GeoPackage: {exc}")
+                continue
+            print(f"  {copia.name}: copia sin {', '.join(quitadas) or 'nada'}")
 
     print()
     print(f"{generados} archivo(s) generado(s)")
