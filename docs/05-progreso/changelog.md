@@ -27,17 +27,24 @@ Formato: `## [YYYY-MM-DD] - Descripción`
 - ✅ Visor de mapas con Leaflet: 3 mapas base (Argenmap claro y oscuro del IGN,
   satelital de Esri), panel de capas y vista compartible por hash
 - ✅ Reproyección 5344 a 4326 sin GDAL, verificada contra los dos motores
-- ✅ Tercer dataset cargado: `cr-equ-playones-deportivos` (77 puntos)
-- ✅ Changelog por dataset completo: los 3 datasets tienen el suyo en
+- ✅ Dos datasets nuevos: `cr-equ-playones-deportivos` (77 puntos) y
+  `cr-equ-asociaciones-vecinales` (68 puntos)
+- ✅ Popups del visor: muestran todos los campos, sin configuración por capa
+- ✅ Campos reservados: `comun.CAMPOS_RESERVADOS` saca un atributo de las tres
+  salidas publicadas (GeoJSON, GeoPackage saneado y columna `campos` del
+  catálogo), sin tocar el maestro. Primer uso: el teléfono de los presidentes
+  de las asociaciones vecinales
+- ✅ Changelog por dataset completo: los 4 datasets tienen el suyo en
   `ide-datos/catalogo/changelog/`
 - ✅ Licencias separadas: código MIT, datos CC BY 4.0
 
 ### Estado del Repo
-- Datasets publicados: 3 (`cr-adm-limites-barrios` 77 polígonos,
-  `cr-equ-espacios-verdes` 383 polígonos, `cr-equ-playones-deportivos` 77 puntos)
-- Validación: 0 errores, 11 avisos
+- Datasets publicados: 4 (`cr-adm-limites-barrios` 77 polígonos,
+  `cr-equ-espacios-verdes` 383 polígonos, `cr-equ-playones-deportivos` 77 puntos,
+  `cr-equ-asociaciones-vecinales` 68 puntos)
+- Validación: 0 errores, 15 avisos
 - Sitio armado: 5 MB, 5 páginas, GPKG + GeoJSON + XML ISO + QMD por dataset
-- Metadatos ISO: los 3 se generan, los 3 incompletos para cosecha (falta A8 y C1)
+- Metadatos ISO: los 4 se generan, los 4 incompletos para cosecha (falta A8 y C1)
 
 ### Deuda tecnica abierta
 - `frecuencia_actualizacion` vacía en los 3 datasets: bloquea el elemento A8 del
@@ -46,7 +53,9 @@ Formato: `## [YYYY-MM-DD] - Descripción`
   GitHub Pages en el deploy, falta cablearla al catálogo
 - Descripciones de 70 a 83 caracteres en los 3 datasets; la ficha institucional
   pide 200 como mínimo
-- `<history>` vacío en los 3 `.qmd`: ningún dataset tiene el linaje documentado
+- `<history>` vacío en los 4 `.qmd`: ningún dataset tiene el linaje documentado
+- `cr-equ-asociaciones-vecinales`: 15 de 68 entidades con geometría vacía, y
+  `responsable` publica nombre y apellido de particulares, pendiente de decidir
 - `<extent>` centinela en `cr-adm-limites-barrios` y `cr-equ-espacios-verdes`
 - `nomenclatura.md` §10.2 quedó desactualizado: dice que el geoportal lee
   `catalogo.json` en el navegador, pero el listado se renderiza al publicar
