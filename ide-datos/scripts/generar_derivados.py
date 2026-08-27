@@ -187,9 +187,29 @@ def normalizar_geometria(geometria):
     return geometria
 
 
+def normalizar_propiedades(entidad):
+    """Tidy the attribute values on the way out.
+
+    QGIS exports carry whatever the operator typed: trailing spaces, a stray
+    newline at the end of a name. That noise reaches every consumer of the
+    published GeoJSON, so it is cleaned here rather than hidden by the viewer.
+    An attribute left empty becomes null, which says "no value" instead of
+    pretending there is a blank one.
+    """
+    propiedades = entidad.get("properties")
+    if not isinstance(propiedades, dict):
+        return
+    for campo, valor in propiedades.items():
+        if not isinstance(valor, str):
+            continue
+        limpio = " ".join(valor.split())
+        propiedades[campo] = limpio or None
+
+
 def escribir_coleccion(entidades, destino):
     for entidad in entidades:
         normalizar_geometria(entidad.get("geometry"))
+        normalizar_propiedades(entidad)
     with open(destino, "w", encoding="utf-8") as fh:
         json.dump(
             {"type": "FeatureCollection", "features": entidades},
