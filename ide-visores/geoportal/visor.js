@@ -114,6 +114,8 @@
     barrio: "Barrio",
     calle: "Calle",
     interseccion: "Intersección",
+    altura: "Altura",
+    posee_comision: "Comisión vecinal",
     obs: "Observaciones",
     area_m2: "Superficie",
     zona: "Zona",
