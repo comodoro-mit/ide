@@ -15,6 +15,58 @@ Formato: `## [YYYY-MM-DD] - Descripción`
 
 ---
 
+### [2026-08-27] - Pipeline completo y geoportal en linea
+
+### Completado
+- ✅ Pipeline de 5 scripts cerrado y corriendo de punta a punta: `validar_catalogo.py`,
+  `derivar_catalogo.py`, `generar_derivados.py`, `creador_metadata.py`, `armar_sitio.py`
+- ✅ `creador_metadata.py` reescrito: ISO 19139 según el perfil IDERA v2.0, sin inventar
+  elementos (lo que no tiene fuente se reporta como brecha, no se rellena)
+- ✅ Geoportal en `ide-visores/geoportal/`: 5 páginas (index, datasets, visor,
+  documentación, institucional) con parciales de header y pie
+- ✅ Visor de mapas con Leaflet: 3 mapas base (Argenmap claro y oscuro del IGN,
+  satelital de Esri), panel de capas y vista compartible por hash
+- ✅ Reproyección 5344 a 4326 sin GDAL, verificada contra los dos motores
+- ✅ Tercer dataset cargado: `cr-equ-playones-deportivos` (77 puntos)
+- ✅ Changelog por dataset completo: los 3 datasets tienen el suyo en
+  `ide-datos/catalogo/changelog/`
+- ✅ Licencias separadas: código MIT, datos CC BY 4.0
+
+### Estado del Repo
+- Datasets publicados: 3 (`cr-adm-limites-barrios` 77 polígonos,
+  `cr-equ-espacios-verdes` 383 polígonos, `cr-equ-playones-deportivos` 77 puntos)
+- Validación: 0 errores, 11 avisos
+- Sitio armado: 5 MB, 5 páginas, GPKG + GeoJSON + XML ISO + QMD por dataset
+- Metadatos ISO: los 3 se generan, los 3 incompletos para cosecha (falta A8 y C1)
+
+### Deuda tecnica abierta
+- `frecuencia_actualizacion` vacía en los 3 datasets: bloquea el elemento A8 del
+  perfil IDERA y con eso la cosecha del catálogo
+- `url_descarga` sin definir: bloquea el elemento C1. La URL base la aporta
+  GitHub Pages en el deploy, falta cablearla al catálogo
+- Descripciones de 70 a 83 caracteres en los 3 datasets; la ficha institucional
+  pide 200 como mínimo
+- `<history>` vacío en los 3 `.qmd`: ningún dataset tiene el linaje documentado
+- `<extent>` centinela en `cr-adm-limites-barrios` y `cr-equ-espacios-verdes`
+- `nomenclatura.md` §10.2 quedó desactualizado: dice que el geoportal lee
+  `catalogo.json` en el navegador, pero el listado se renderiza al publicar
+
+### Proximos Pasos
+1. Completar `frecuencia_actualizacion` en `catalogo.csv` para los 3 datasets
+2. Cablear la URL base al catálogo para cerrar el elemento C1
+3. Recalcular el `<extent>` y completar el `<history>` de los `.qmd` en QGIS
+4. Ampliar las descripciones a 200 caracteres
+5. Eliminar el scaffolding muerto de `ide-datos/.github/` e `ide-visores/.github/`
+
+### Notas
+- El orden de los scripts no es opcional: `armar_sitio.py` copia e indexa, nunca
+  convierte. Corriéndolo solo, un dataset nuevo no llega al sitio aunque el
+  catálogo ya lo declare
+- Los workflows de CI viven en `.github/workflows/` en la raíz del repo, no dentro
+  de `ide-datos/` ni de `ide-visores/`: es un solo repositorio
+
+---
+
 ### [2026-08-21] - Inicio Fase 0
 
 ### Completado
