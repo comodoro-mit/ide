@@ -24,6 +24,9 @@ dist/
 logs/
 *.log
 
+# Insumos: rasteres y descargas de origen, no son producto publicable
+_insumos/
+
 # Temporal
 tmp/
 temp/
