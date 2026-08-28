@@ -165,3 +165,83 @@
     }
   });
 })();
+
+/* --- back to top -------------------------------------------------------- */
+
+(function () {
+  "use strict";
+
+  // Only on pages that are actually long: on a two screen page the button is
+  // noise. Measured in viewports of scrollable content.
+  var LARGO_MINIMO = 2;
+  // And only once the top is far enough away to be worth a shortcut.
+  var APARECE_A = 0.8;
+
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  // Built here, never in the HTML: without this script it would be a dead
+  // button, and the site has to work with no JS at all.
+  var boton = document.createElement("button");
+  boton.type = "button";
+  boton.className = "al-tope";
+  boton.setAttribute("aria-label", "Volver al inicio de la página");
+  boton.hidden = true;
+  boton.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  document.body.appendChild(boton);
+
+  var visible = false;
+  var pendiente = null;
+
+  function paginaLarga() {
+    return document.documentElement.scrollHeight >
+      window.innerHeight * LARGO_MINIMO;
+  }
+
+  function revisar() {
+    pendiente = null;
+    var mostrar = paginaLarga() &&
+      window.scrollY > window.innerHeight * APARECE_A;
+    if (mostrar === visible) return;
+    visible = mostrar;
+    if (mostrar) {
+      boton.hidden = false;
+      // Next frame, so the browser has a hidden state to animate from.
+      window.requestAnimationFrame(function () {
+        boton.classList.add("visible");
+      });
+    } else {
+      boton.classList.remove("visible");
+      // With reduced motion there is no transition, so transitionend never
+      // fires and the hidden attribute below would never be set.
+      if (reducido.matches) boton.hidden = true;
+    }
+  }
+
+  function pedirRevision() {
+    if (pendiente) return;
+    pendiente = window.requestAnimationFrame(revisar);
+  }
+
+  // Leaving it in the accessibility tree while it fades out would let a
+  // keyboard reach an invisible control.
+  boton.addEventListener("transitionend", function (evento) {
+    if (evento.propertyName === "opacity" && !visible) boton.hidden = true;
+  });
+
+  boton.addEventListener("click", function () {
+    window.scrollTo({
+      top: 0,
+      behavior: reducido.matches ? "auto" : "smooth"
+    });
+    // The button is about to disappear under the focus ring. Hand focus to the
+    // top of the page instead of dropping it on the body.
+    var destino = document.querySelector(".marca");
+    if (destino) destino.focus({ preventScroll: true });
+  });
+
+  window.addEventListener("scroll", pedirRevision, { passive: true });
+  window.addEventListener("resize", pedirRevision);
+  revisar();
+})();
