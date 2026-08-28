@@ -11,7 +11,7 @@
   var contenedor = document.getElementById("mapa");
   if (!contenedor || typeof window.L === "undefined") return;
 
-  var CENTRO = [-45.846, -67.496];
+  var CENTRO = [-45.828, -67.522];
   var ZOOM = 12;
 
   var CREDITO_IGN =
@@ -44,6 +44,18 @@
     claro: { color: "#134768", fillColor: "#2f7fae" },
     oscuro: { color: "#7fd0f5", fillColor: "#7fd0f5" },
     satelital: { color: "#ffd166", fillColor: "#ffd166" }
+  };
+
+  /* Per layer override, optional. The neighbourhood boundaries are the base
+   * layer everything else sits on: a grey fill and a plain outline that flips
+   * with the base, so they frame the map without competing with it. Same three
+   * modes as TRAZOS. */
+  var TRAZOS_POR_CAPA = {
+    "cr-adm-limites-barrios": {
+      claro: { color: "#000", fillColor: "#808080", fillOpacity: .1 },
+      oscuro: { color: "#fff", fillColor: "#808080", fillOpacity: .1 },
+      satelital: { color: "#000", fillColor: "#808080", fillOpacity: .1 }
+    }
   };
 
   // The opening view is the whole city and it stays put. Turning a layer on
@@ -182,19 +194,21 @@
 
   var cargadas = {};
 
-  function estilo(trazo) {
+  function estilo(trazo, idCapa) {
+    var porCapa = TRAZOS_POR_CAPA[idCapa];
+    var propio = porCapa && porCapa[modoActual()];
     return {
-      color: trazo.color,
+      color: (propio && propio.color) || trazo.color,
       weight: 1.5,
       opacity: .95,
-      fillColor: trazo.fillColor,
-      fillOpacity: .25
+      fillColor: (propio && propio.fillColor) || trazo.fillColor,
+      fillOpacity: propio && propio.fillOpacity !== undefined ? propio.fillOpacity : .25
     };
   }
 
   function repintarCapas(trazo) {
     Object.keys(cargadas).forEach(function (id) {
-      cargadas[id].setStyle(estilo(trazo));
+      cargadas[id].setStyle(estilo(trazo, id));
     });
   }
 
@@ -217,7 +231,7 @@
         var etiqueta = fila ? fila.querySelector("span") : null;
         var titulo = etiqueta ? etiqueta.textContent.trim() : id;
         var capa = L.geoJSON(datos, {
-          style: estilo(trazo),
+          style: estilo(trazo, id),
           onEachFeature: function (rasgo, sector) {
             sector.bindPopup(function () {
               return popupHtml(rasgo.properties, titulo, id);
