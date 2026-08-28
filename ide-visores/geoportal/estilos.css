@@ -21,6 +21,15 @@
   /* Hero backdrop: swap the file or tune the opacity here, nowhere else. */
   --hero-imagen: url("img/hero_background.png");
   --hero-opacidad: .35;
+  /* Contour backdrop for the page body. Colour, strength and fade live here;
+     the stroke width lives on the root element of img/curvas_nivel.svg. */
+  --curvas-imagen: url("img/curvas_nivel.svg");
+  --curvas-color: var(--marca);
+  --curvas-opacidad: .10;
+  --curvas-corte: 90%;
+  /* Hero bottom margin. Shared so the contour backdrop can cancel it out and
+     sit flush against the divider. */
+  --portada-margen: 2.25rem;
   --radio: 10px;
 }
 
@@ -44,10 +53,18 @@ body {
   background: var(--bg);
   color: var(--tinta);
   line-height: 1.6;
+  /* The contour backdrop is 100vw wide and the scrollbar gutter is always
+     reserved, so without this it would push a horizontal scrollbar. `clip`
+     rather than `hidden`: it does not create a scroll container. */
+  overflow-x: clip;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 .contenedor {
+  /* width: 100% is load bearing. body is a flex column and `margin: 0 auto`
+     cancels the stretch, so without it the container shrinks to fit its
+     content: filter down to one dataset card and the whole page narrows. */
+  width: 100%;
   max-width: var(--ancho);
   margin: 0 auto;
   padding: 0 1.25rem;
@@ -55,7 +72,50 @@ body {
 
 a { color: var(--acento); }
 
-main { flex: 1 0 auto; }
+main {
+  flex: 1 0 auto;
+  /* Positioning context and stacking context for the contour backdrop below. */
+  position: relative;
+  isolation: isolate;
+}
+
+/* --- contour backdrop --- */
+
+/* The texture hangs off <main>, so on every page it starts right under the
+   hero divider without any page needing its own markup. The SVG is used as a
+   mask over a flat colour, which is what keeps --curvas-color working on an
+   external file. */
+main::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  /* Pulled up over the hero margin so the drawing touches the divider. */
+  top: calc(-1 * var(--portada-margen));
+  left: 50%;
+  width: 100vw;
+  /* The viewBox of curvas_nivel.svg is 313 x 230. Matching it here shows the
+     whole width of the map and lands the end of the fade exactly where the
+     drawing ends, at any screen width. */
+  aspect-ratio: 313 / 230;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: var(--curvas-color);
+  opacity: var(--curvas-opacidad);
+  /* Two mask layers, the drawing and the fade. `intersect` keeps only what
+     both cover, which is what makes the texture die out downwards. */
+  -webkit-mask-image: var(--curvas-imagen),
+    linear-gradient(to bottom, #000 0%, transparent var(--curvas-corte));
+  mask-image: var(--curvas-imagen),
+    linear-gradient(to bottom, #000 0%, transparent var(--curvas-corte));
+  -webkit-mask-size: 100% 100%, 100% 100%;
+  mask-size: 100% 100%, 100% 100%;
+  -webkit-mask-position: center top, center top;
+  mask-position: center top, center top;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
 
 /* --- brand bar --- */
 
@@ -118,6 +178,20 @@ main { flex: 1 0 auto; }
   color: #fff;
 }
 
+/* A section that exists in the navigation but has no page behind it yet. Same
+   box as a tab, dimmer, and nothing to click. */
+.solapas .inactiva {
+  display: inline-block;
+  padding: .3rem .65rem;
+  color: rgba(255, 255, 255, .28);
+  font-size: .8125rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
 .solapas a[aria-current="page"] {
   background: rgba(255, 255, 255, 0.507);
   color: #fff;
@@ -132,7 +206,7 @@ main { flex: 1 0 auto; }
   text-align: center;
   padding: 3.25rem 0 2.5rem;
   border-bottom: 1px solid var(--linea);
-  margin-bottom: 2.25rem;
+  margin-bottom: var(--portada-margen);
 }
 
 /* The image lives on its own layer so the text keeps full contrast. */
@@ -172,7 +246,7 @@ main { flex: 1 0 auto; }
 
 /* Inner pages: shorter hero, no backdrop. The image belongs to the home.
    Title and standfirst are left aligned here; the home hero stays centred. */
-.portada-interior { padding: 2.25rem 0 1.75rem; }
+.portada-interior { padding: 2.25rem 0 0.5rem; }
 .portada-interior::before { content: none; }
 .portada-interior h1 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); text-align: left; }
 .portada-interior .bajada { text-align: left; }
@@ -274,7 +348,8 @@ main { flex: 1 0 auto; }
 .intro { margin-bottom: 2.5rem; }
 
 .intro h2,
-.institucional h2 {
+.institucional h2,
+.seccion h2 {
   margin: 0 0 .75rem;
   font-size: 1.375rem;
   font-weight: 600;
@@ -282,25 +357,96 @@ main { flex: 1 0 auto; }
 }
 
 .intro p,
-.institucional p { margin: 0 0 .9rem; }
+.institucional p,
+.seccion p { margin: 0 0 .9rem; }
+
+/* --- text sections --- */
+/* A run of headed prose blocks on an inner page. The section already sits
+   inside main.contenedor, so it sets no width of its own: nesting a second
+   .contenedor would double the gutter and cap the width twice. */
+
+.seccion { margin-bottom: 2.25rem; }
+
+.seccion:last-child { margin-bottom: 3rem; }
+
+.seccion > p:last-child { margin-bottom: 0; }
+
+.seccion ul {
+  margin: 0 0 .9rem;
+  padding-left: 1.1rem;
+}
+
+.seccion li { margin-bottom: .3rem; }
+
+.seccion .cita-modelo {
+  margin: 0 0 .9rem;
+  padding: .7rem .9rem;
+  background: var(--tarjeta);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-size: .875rem;
+}
+
+/* Placeholder for a section still to be written. Delete the class once the
+   prose is in: it is a note to the editor, not a style. */
+.pendiente {
+  color: var(--suave);
+  font-style: italic;
+}
+
+/* A fact still to be confirmed inside prose that is otherwise final: a file
+   number, a date, an office name. Highlighted so it cannot go live unnoticed.
+   Remove the tag, keep the text. */
+.dato-pendiente {
+  background: #fff3bf;
+  color: inherit;
+  padding: 0 .15rem;
+  border-radius: 3px;
+}
 
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  column-gap: 2rem;
+  column-gap: 1.75rem;
   row-gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .tarjeta {
+  position: relative;
   display: block;
-  padding: 1.1rem 1.25rem;
+  padding: 1.1rem 1.1rem;
   background: var(--tarjeta);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
+  overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: border-color .15s ease, transform .15s ease;
+}
+
+/* Hover wash: a tint that fills the card from the bottom up, like something
+   loading. It is a pseudo element so nothing about the card itself moves, and
+   it sits under the text because the text is raised a layer. */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+              color-mix(in srgb, var(--marca) 5%, transparent),
+              color-mix(in srgb, var(--marca) 5%, transparent) 80%,
+              transparent);
+  opacity: 0;
+  transform: translateY(35%);
+  pointer-events: none;
+  transition: opacity .5s cubic-bezier(.22, .61, .36, 1),
+              transform .5s cubic-bezier(.22, .61, .36, 1);
+}
+
+.tarjeta:hover::before,
+.tarjeta:focus-visible::before {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .tarjeta:hover,
@@ -310,12 +456,14 @@ main { flex: 1 0 auto; }
 }
 
 .tarjeta h3 {
+  position: relative;
   margin: 0 0 .35rem;
   font-size: 1rem;
   color: var(--marca);
 }
 
 .tarjeta p {
+  position: relative;
   margin: 0;
   font-size: .875rem;
   color: var(--suave);
@@ -331,6 +479,7 @@ main { flex: 1 0 auto; }
 @media (prefers-reduced-motion: reduce) {
   .tarjeta { transition: none; }
   .tarjeta:hover { transform: none; }
+  .tarjeta::before { transition: none; transform: none; }
 }
 
 /* --- map viewer --- */
@@ -349,7 +498,7 @@ main { flex: 1 0 auto; }
   grid-template-columns: 16rem minmax(0, 1fr);
   gap: 1rem;
   /* Header, hero and footer already took their share of the viewport. */
-  height: calc(100vh - 19rem);
+  height: calc(100vh - 17rem);
   min-height: 26rem;
   margin-bottom: .6rem;
 }
@@ -556,15 +705,30 @@ main { flex: 1 0 auto; }
 
 /* --- dataset cards --- */
 
+/* Two even columns inside the shared page container. The tracks are 1fr each
+   so both cards are always the same width, whatever their content. */
+.fichas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .7rem 2rem;
+  align-items: start;
+}
+
+/* The filter hides cards with [hidden]. A lone card keeps the width of one
+   column and stays in the left one, so the list does not shift when the filter
+   narrows. Nothing to do: it already falls in the first track. */
+
 .ficha {
   position: relative;
-  padding-right: 12rem;
   background: var(--tarjeta);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
   padding: .85rem 1.05rem;
-  margin-bottom: .7rem;
   font-size: .875rem;
+}
+
+@media (max-width: 46rem) {
+  .fichas { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Theme chip, pinned to the card's top right corner. */
@@ -758,6 +922,13 @@ main { flex: 1 0 auto; }
 }
 
 .navegacion li { margin-bottom: .3rem; }
+
+.navegacion .inactiva {
+  color: var(--suave);
+  opacity: .55;
+  cursor: default;
+  user-select: none;
+}
 
 /* Hidden visually, still read by screen readers. */
 .visualmente-oculto {
