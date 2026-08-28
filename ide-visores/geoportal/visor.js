@@ -128,6 +128,7 @@
     interseccion: "Intersección",
     altura: "Altura",
     posee_comision: "Comisión vecinal",
+    responsable: "Responsable",
     obs: "Observaciones",
     area_m2: "Superficie",
     zona: "Zona",
