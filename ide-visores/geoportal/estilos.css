@@ -27,6 +27,10 @@
   --curvas-color: var(--marca);
   --curvas-opacidad: .10;
   --curvas-corte: 90%;
+  /* Height of curvas_nivel.svg once stretched to the full width, from its
+     313 x 230 viewBox. Not a free knob: change it and drawing and fade stop
+     lining up. */
+  --curvas-alto: calc(100vw * 230 / 313);
   /* Hero bottom margin. Shared so the contour backdrop can cancel it out and
      sit flush against the divider. */
   --portada-margen: 2.25rem;
@@ -89,14 +93,14 @@ main::before {
   content: "";
   position: absolute;
   z-index: -1;
-  /* Pulled up over the hero margin so the drawing touches the divider. */
+  /* Pulled up over the hero margin so the drawing touches the divider, and
+     ending with main. The box must not be taller than main: sizing it by the
+     drawing instead made it overflow on short pages, which added scroll below
+     the footer and read as a footer that would not stay down. */
   top: calc(-1 * var(--portada-margen));
+  bottom: 0;
   left: 50%;
   width: 100vw;
-  /* The viewBox of curvas_nivel.svg is 313 x 230. Matching it here shows the
-     whole width of the map and lands the end of the fade exactly where the
-     drawing ends, at any screen width. */
-  aspect-ratio: 313 / 230;
   transform: translateX(-50%);
   pointer-events: none;
   background: var(--curvas-color);
@@ -107,8 +111,11 @@ main::before {
     linear-gradient(to bottom, #000 0%, transparent var(--curvas-corte));
   mask-image: var(--curvas-imagen),
     linear-gradient(to bottom, #000 0%, transparent var(--curvas-corte));
-  -webkit-mask-size: 100% 100%, 100% 100%;
-  mask-size: 100% 100%, 100% 100%;
+  /* Both layers get the drawing's natural size: full width, and the height its
+     313 x 230 viewBox implies. The fade then ends exactly where the drawing
+     ends, at any screen width, without the box having to match that height. */
+  -webkit-mask-size: 100% var(--curvas-alto), 100% var(--curvas-alto);
+  mask-size: 100% var(--curvas-alto), 100% var(--curvas-alto);
   -webkit-mask-position: center top, center top;
   mask-position: center top, center top;
   -webkit-mask-repeat: no-repeat, no-repeat;
