@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.28.6-Firenze">
+<qgis version="3.40.7-Bratislava">
   <identifier>cr-equ-asociaciones-vecinales</identifier>
   <parentidentifier></parentidentifier>
   <language>ARG</language>
@@ -27,26 +27,27 @@
     <role>owner</role>
   </contact>
   <links>
-    <link description="" size="" mimeType="" url="Comodoro.gov/miciudad" name="Mi Ciudad" format="" type="https"/>
+    <link name="Mi Ciudad" format="" url="Comodoro.gov/miciudad" type="https" description="" size="" mimeType=""/>
   </links>
+  <dates/>
   <fees></fees>
   <license>Creative Commons Attribution 4.0</license>
   <encoding></encoding>
   <crs>
     <spatialrefsys nativeFormat="Wkt">
-      <wkt></wkt>
+      <wkt>PROJCRS["POSGAR 2007 / Argentina 2",BASEGEOGCRS["POSGAR 2007",DATUM["Posiciones Geodesicas Argentinas 2007",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",5340]],CONVERSION["Argentina zone 2",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",-90,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-69,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",1,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",2500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Argentina - between 70°30'W and 67°30'W, onshore."],BBOX[-54.9,-70.5,-24.08,-67.49]],ID["EPSG",5344]]</wkt>
       <proj4>+proj=tmerc +lat_0=-90 +lon_0=-69 +k=1 +x_0=2500000 +y_0=0 +ellps=WGS84 +units=m +no_defs</proj4>
-      <srsid>0</srsid>
-      <srid>0</srid>
-      <authid></authid>
-      <description></description>
-      <projectionacronym></projectionacronym>
-      <ellipsoidacronym></ellipsoidacronym>
+      <srsid>28114</srsid>
+      <srid>5344</srid>
+      <authid>EPSG:5344</authid>
+      <description>POSGAR 2007 / Argentina 2</description>
+      <projectionacronym>tmerc</projectionacronym>
+      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
       <geographicflag>false</geographicflag>
     </spatialrefsys>
   </crs>
   <extent>
-    <spatial maxx="2626314.42468139994889498" minx="2603272.58490642020478845" maxz="0" minz="0" maxy="4934296.7443301398307085" dimensions="2" crs="" miny="4916059.69679510034620762"/>
+    <spatial minx="2603272.58490000013262033" miny="4916059.69680000003427267" maxz="0" maxy="4934296.7443000003695488" dimensions="2" crs="EPSG:5344" minz="0" maxx="2626314.42469999985769391"/>
     <temporal>
       <period>
         <start></start>
