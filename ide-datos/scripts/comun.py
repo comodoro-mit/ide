@@ -173,6 +173,12 @@ def ruta_maestro(dataset_id, tema, extension):
 # associations are the case that created this: useful inside the municipality,
 # personal data of private citizens once published under CC BY 4.0.
 #
+# That case is closed: `tel` was dropped from the master in 2.0.0, because this
+# mechanism protects what gets published and not the master itself, and the
+# master is committed to a public repository. Read the limit twice before
+# relying on this: reserving a field is not a way to keep personal data in a
+# public repo.
+#
 # Declared here and only here, so every script strips the same fields:
 #   generar_derivados.py  leaves them out of the GeoJSON and writes a
 #                         sanitised GeoPackage next to it
@@ -182,9 +188,10 @@ def ruta_maestro(dataset_id, tema, extension):
 #
 # The master keeps the column: this hides the field from what is published, it
 # does not delete anything from the source of truth.
-CAMPOS_RESERVADOS = {
-    "cr-equ-asociaciones-vecinales": ("tel",),
-}
+#
+# Empty on purpose right now. The mechanism stays wired into the three scripts
+# below, so declaring a field here is all it takes.
+CAMPOS_RESERVADOS = {}
 
 
 def campos_reservados(dataset_id):

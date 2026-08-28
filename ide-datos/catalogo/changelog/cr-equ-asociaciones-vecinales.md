@@ -9,6 +9,50 @@ El formato de versión es SemVer según `nomenclatura.md` §6:
 
 ---
 
+## 2.0.0 - 2026-08-28
+
+Se saca del maestro el dato personal que nunca debio estar en un repositorio
+publico, y se corrigen las geometrias vacias que rompian el build.
+
+- **Se elimina la columna `tel`.** Guardaba los telefonos de las personas que
+  presiden cada asociacion, 64 de 68 registros. El campo estaba declarado como
+  reservado y el pipeline lo excluia de las tres salidas publicadas, pero eso
+  protege lo que se publica, **no el maestro**, y el maestro se commitea a un
+  repositorio publico. El dato estuvo accesible en el historial de git desde la
+  carga inicial hasta esta version.
+- **Se elimina la columna `correo`**, vacia en los 68 registros.
+- **Las 15 geometrias vacias pasan de `POINT EMPTY` a `NULL`.** `ogr2ogr` no
+  puede reproyectar coordenadas `NaN` y abortaba la derivacion en la entidad 54.
+  Con geometria nula las 15 entidades siguen publicandose, con sus atributos y
+  sin ubicacion: en el GeoJSON salen como `"geometry": null`. Se corrigio con
+  una sentencia SQL desde el DB Manager de QGIS, no con un parche en el
+  pipeline.
+- **`responsable` se mantiene publicado.** Decision tomada, no pendiente: es un
+  rol de representacion vecinal y el dato se considera publico. Queda asentado
+  aca para que no se vuelva a discutir por omision.
+- Se reescribio el historial del repositorio con `git filter-repo` para purgar
+  todas las versiones del maestro que contenian la columna `tel`.
+
+### Esquema
+
+Cambio MAJOR: el maestro pasa de 14 a 12 columnas. Quedan `id`, `geom`, `tipo`,
+`posee_comision`, `nombre`, `calle`, `altura`, `interseccion`, `barrio`,
+`responsable`, `latitud`, `longitud`.
+
+### Lo que sigue pendiente
+
+- `frecuencia_actualizacion` vacia en `catalogo.csv`: elemento A8 del perfil
+  IDERA v2.0, obligatorio para la cosecha.
+- La descripcion del catalogo tiene 77 caracteres; la ficha institucional pide
+  un minimo de 200.
+- `<history>` del `.qmd` vacio: el linaje del dato no esta documentado.
+- `validar_catalogo.py` no detecta geometrias vacias ni nulas. Se entero el
+  build, que es tarde.
+- Las 15 entidades sin ubicacion siguen sin coordenadas. Publicarlas sin
+  ubicacion es el estado actual, no una decision cerrada.
+
+---
+
 ## 1.0.0 - 2026-08-27
 
 Primera carga del dataset como maestro versionado.
@@ -36,6 +80,10 @@ pipeline lo saca de las **tres** salidas publicadas:
 
 **El maestro conserva la columna y los 64 teléfonos.** Esto oculta el campo de
 lo que sale a la web, no lo borra de la fuente de verdad.
+
+> Corregido en 2.0.0: esa era exactamente la falla. El maestro se commitea a un
+> repositorio publico, asi que reservar el campo nunca alcanzo. La columna se
+> elimino y el historial se purgo.
 
 ### Deuda conocida al momento de la carga
 
