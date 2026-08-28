@@ -108,8 +108,13 @@ ARCHIVOS_GEOPORTAL = (
     "app.js",
     "visor.js",
     "img/logotipo.png",
-    "img/logotipo_icono.png",
     "img/hero_background.png",
+    "img/curvas_nivel.svg",
+    "img/favicon.ico",
+    "img/favicon-16.png",
+    "img/favicon-32.png",
+    "img/favicon-48.png",
+    "img/apple-touch-icon.png",
 )
 
 
@@ -292,10 +297,18 @@ def escribir_paginas(filas, salida, fecha):
         destino.write_text(armar_pagina(plantilla, filas, fecha), encoding="utf-8")
         total += destino.stat().st_size
 
+    # A declared asset that went missing used to be skipped in silence, so the
+    # stale copy left in the output folder kept the local site working while a
+    # clean deploy shipped a broken link. Fail instead.
+    faltan = [n for n in ARCHIVOS_GEOPORTAL if not (ruta_geoportal() / n).exists()]
+    if faltan:
+        raise SystemExit(
+            "[ERROR] faltan archivos declarados en ARCHIVOS_GEOPORTAL:\n  "
+            + "\n  ".join(faltan)
+            + "\nAgregalos a ide-visores/geoportal/ o sacalos de la tupla."
+        )
     for nombre in ARCHIVOS_GEOPORTAL:
-        origen = ruta_geoportal() / nombre
-        if origen.exists():
-            total += copiar(origen, salida / nombre)
+        total += copiar(ruta_geoportal() / nombre, salida / nombre)
     return total, [p.name for p in plantillas]
 
 
