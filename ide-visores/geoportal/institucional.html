@@ -6,8 +6,11 @@
 <title>IDE Comodoro Rivadavia</title>
 <meta name="description" content="Qué es la IDE de Comodoro Rivadavia, quién la sostiene y bajo qué normas trabaja.">
 <meta name="theme-color" content="#134768">
-<link rel="icon" type="image/png" href="img/logotipo_icono.png">
-<link rel="apple-touch-icon" href="img/logotipo_icono.png">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="img/favicon-48.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="estilos.css">
@@ -19,13 +22,417 @@
 <section class="portada portada-interior">
   <div class="contenedor">
     <h1>Institucional</h1>
-    <p class="bajada">Qué es la IDE de Comodoro Rivadavia, quién la sostiene y bajo qué normas trabaja.</p>
+    <p class="bajada">Qué es la IDE de Comodoro Rivadavia, quién la sostiene y bajo qué normas trabaja</p>
   </div>
 </section>
 
 <main class="contenedor">
 
-  <p>Contenido en preparación.</p>
+  <!-- One <section class="seccion"> per block. A .pendiente paragraph is a note
+       to whoever writes the page; a .dato-pendiente span is a fact still to be
+       confirmed inside finished prose. Both are meant to disappear. -->
+
+  <section class="seccion" id="alcance">
+    <h2>Qué es y qué alcance tiene</h2>
+    <p>
+      La Infraestructura de Datos Espaciales de Comodoro Rivadavia (IDE Comodoro) es el
+      canal por el cual la Municipalidad de Comodoro Rivadavia publica, documenta y pone a
+      disposición su información geoespacial oficial. Reúne en un solo lugar los conjuntos
+      de datos producidos por las distintas áreas del municipio, los normaliza bajo una
+      misma nomenclatura y un mismo sistema de referencia, los documenta con metadatos
+      estandarizados y los publica en formatos abiertos, libres de costo y sin registro
+      previo.
+    </p>
+    <p>
+      Su alcance territorial es el ejido municipal de Comodoro Rivadavia, provincia del
+      Chubut. Su alcance temático es progresivo: la IDE incorpora conjuntos de datos a
+      medida que cada área productora los normaliza y asume su responsabilidad sobre
+      ellos, de modo que el catálogo publicado refleja lo que efectivamente está en
+      condiciones de publicarse y no la totalidad de la información que el municipio
+      administra.
+    </p>
+    <p>
+      Que un conjunto de datos sea <strong>oficial</strong> significa, en este contexto,
+      que la versión publicada acá es la misma que utiliza el municipio para su propia
+      gestión, que tiene un área responsable identificada, una versión declarada y una
+      fecha de actualización verificable.
+    </p>
+    <p>
+      La IDE <strong>no</strong> constituye fuente de información dominial, catastral ni
+      de mensura, no reemplaza a los registros oficiales que llevan los organismos
+      competentes en cada materia, y no publica información que permita identificar
+      personas físicas.
+    </p>
+  </section>
+
+  <section class="seccion" id="normativa">
+    <h2>Marco normativo</h2>
+    <p>
+      La IDE Comodoro se desarrolla en el marco de la Ley Nacional N.º 27.275 de Acceso a
+      la Información Pública, que establece los principios de transparencia activa y
+      apertura de datos, y de los lineamientos técnicos de
+      <a href="https://www.idera.gob.ar/" target="_blank" rel="noopener">IDERA</a>, la
+      Infraestructura de Datos Espaciales de la República Argentina, a la que el municipio
+      adhirió en 2021.
+    </p>
+    <p>
+      A nivel local, la iniciativa cuenta con un <strong>proyecto de resolución
+      municipal</strong> elaborado por la Dirección General de Modernización e
+      Investigación Territorial, que
+      prevé la creación formal de la IDE, la designación del área responsable de su
+      coordinación técnica, la conformación de un comité técnico con representación de las
+      distintas direcciones y la obligación de publicar por este canal la información
+      geoespacial de alcance público. El proyecto se encuentra en trámite ante la 
+      Secretaría de Gobierno, Modernización y Transparencia.
+    </p>
+    <p>
+      Hasta tanto ese acto administrativo se dicte, la IDE opera como una práctica de
+      trabajo del área de Geoestadísticas sobre información que ya produce, sostenida por
+      el compromiso expreso de las áreas participantes. Esta página se actualizará con el
+      número y la fecha de la norma una vez aprobada, y con el enlace a su texto completo.
+    </p>
+    <p>
+      La publicación se apoya además en los convenios de cooperación técnica vigentes con
+      la Universidad Nacional de la Patagonia San Juan Bosco 2021 y con el
+      Instituto Geográfico Nacional (2022).
+    </p>
+  </section>
+
+  <section class="seccion" id="responsable">
+    <h2>Quién la sostiene</h2>
+    <p>
+      La coordinación técnica de la IDE Comodoro está a cargo del
+      <strong>Departamento de Geoestadísticas</strong>, dependiente de la
+      <strong>Dirección General de Modernización e Investigación Territorial</strong>
+      de la Subsecretaría de Modernización y Transparencia dentro de la Secretaría de Gobierno,
+      Modernización y Transparencia.
+    </p>
+    <p>
+      El Departamento es el área con competencia específica en información geoespacial del
+      municipio: produce cartografía y análisis territorial para las distintas áreas de
+      gobierno, y sobre esa función asume la coordinación de la IDE. En términos de la
+      infraestructura, actúa como <strong>nodo: no es propietario de todos los
+      datos que publica, sino el área que los normaliza, los documenta según los estándares
+      adoptados, los publica por este canal y responde por la continuidad del servicio. La
+      autoridad sobre el contenido de cada conjunto de datos permanece en el área que lo
+      produce.</strong>
+    </p>
+    <p>
+      Concretamente, el Departamento de Geoestadísticas tiene a su cargo mantener el
+      catálogo y la nomenclatura, generar y validar los metadatos, operar el pipeline de
+      publicación y el geoportal, asistir técnicamente a las áreas que incorporan sus
+      conjuntos de datos, y representar al municipio ante las instancias de articulación 
+      nacional en materia de datos espaciales.
+    </p>
+  </section>
+
+  <section class="seccion" id="gobernanza">
+    <h2>Gobernanza del dato</h2>
+    <p>
+      Cada conjunto de datos publicado tiene un responsable identificado. Esa es la regla
+      central de la que dependen todas las demás: un conjunto sin responsable asignado no
+      se publica, porque sin alguien que responda por su contenido no hay forma de sostener
+      su vigencia ni de resolver una discrepancia.
+    </p>
+    <p>La distribución de responsabilidades es la siguiente:</p>
+    <ul>
+      <li>
+        <strong>Área productora.</strong> Es la custodia del conjunto de datos. Decide su
+        contenido, aprueba cada versión, define su frecuencia de actualización y su nivel
+        de acceso, y responde por su exactitud. Es la autoridad sobre el dato, y esa
+        condición no se transfiere al publicarlo.
+      </li>
+      <li>
+        <strong>Departamento de Geoestadísticas.</strong> Normaliza, documenta y publica.
+        Valida que cada conjunto cumpla los estándares adoptados, mantiene el catálogo y
+        los metadatos, opera el proceso de publicación y asiste técnicamente a las áreas
+        productoras. No modifica el contenido temático de un conjunto sin acuerdo de su
+        área responsable.
+      </li>
+      <li>
+        <strong>Comité técnico.</strong> Con representación de las direcciones
+        participantes, resuelve las discrepancias de competencia sobre un mismo conjunto de
+        datos y aprueba los cambios en los estándares comunes. Su conformación está prevista
+        en el proyecto de resolución mencionado más arriba y se constituirá con su
+        aprobación.
+      </li>
+    </ul>
+    <p>
+      <strong>Incorporación de un conjunto de datos.</strong> Para integrarse al catálogo,
+      un conjunto debe tener un área responsable designada, un identificador conforme a la
+      nomenclatura vigente, su sistema de referencia declarado, sus campos documentados,
+      sus metadatos completos según el perfil adoptado, una licencia asignada y una
+      frecuencia de actualización comprometida. La verificación de estos requisitos es
+      automática: el proceso de publicación no admite un conjunto que no los cumpla. No se
+      trata de una exigencia formal sino de la condición que hace que el dato sea
+      reutilizable por alguien que no participó de su producción.
+    </p>
+    <p>
+      <strong>Actualización.</strong> Cada cambio en un conjunto de datos se registra con
+      su versión, su fecha y el motivo de la modificación, y actualiza en el mismo acto el
+      dato y su documentación, de manera que catálogo y contenido no puedan divergir. La
+      publicación es un proceso automatizado y trazable, no una carga manual.
+    </p>
+    <p>
+      <strong>Clasificación de acceso.</strong> El nivel de acceso de un conjunto lo
+      determina su área responsable, no quien lo publica. Solo se difunden por este canal
+      los conjuntos clasificados como públicos; la información de uso interno, restringido o
+      sensible no se incorpora a la IDE ni se aloja en los servicios que la sostienen.
+    </p>
+    <p>
+      El detalle operativo de estos procedimientos está en
+      <a href="documentacion.html">Documentación</a>.
+    </p>
+  </section>
+
+  <section class="seccion" id="estandares">
+    <h2>Estándares adoptados</h2>
+    <p>
+      La IDE Comodoro adopta estándares abiertos e internacionales para que sus datos
+      puedan usarse, combinarse y federarse sin depender de ningún programa, proveedor ni
+      acuerdo particular.
+    </p>
+    <ul>
+      <li>
+        <strong>Metadatos.</strong> Perfil de Metadatos para Datos Vectoriales de IDERA
+        v2.0, sobre las normas ISO 19115 (contenido) e ISO 19139 (codificación XML). Cada
+        conjunto de datos publica su archivo de metadatos junto con el dato.
+      </li>
+      <li>
+        <strong>Formatos.</strong> OGC GeoPackage (<code>.gpkg</code>) como formato
+        autoritativo de cada conjunto, y GeoJSON conforme a RFC 7946 como formato de
+        publicación ligera para consumo web. Ambos son formatos abiertos, sin licencia y
+        legibles por cualquier software geoespacial.
+      </li>
+      <li>
+        <strong>Sistemas de referencia.</strong> POSGAR (Posiciones Geodésicas Argentinas) 2007 / 
+        Argentina Faja 2 (EPSG:5344) para almacenamiento y cálculo, Marco de Referencia Geodésico 
+        Nacional de la República Argentina (Disposición N°20/2009); WGS 84 en coordenadas geográficas 
+        (EPSG:4326) para publicación, según exige RFC 7946. El sistema de referencia se declara
+        explícitamente en el catálogo y en los metadatos de cada conjunto.
+      </li>
+      <li>
+        <strong>Categorías temáticas.</strong> <code>topicCategory</code> de ISO 19115,
+        en correspondencia directa con el prefijo temático del identificador de cada
+        conjunto.
+      </li>
+      <li>
+        <strong>Identificadores.</strong> Nomenclatura propia, documentada y estable, con
+        la forma <code>cr-&lt;tema&gt;-&lt;entidad&gt;</code>. El identificador es
+        inmutable: si un conjunto cambia de denominación, cambia su título, nunca su
+        identificador.
+      </li>
+      <li>
+        <strong>Versionado.</strong> Versionado semántico (mayor, menor, corrección) por
+        conjunto de datos, declarado en el catálogo.
+      </li>
+      <li>
+        <strong>Licencia.</strong> Creative Commons Atribución 4.0 Internacional para los
+        datos y los metadatos.
+      </li>
+    </ul>
+    <p>
+      El detalle técnico de cada uno de estos estándares, la nomenclatura completa y las
+      guías de uso están en <a href="documentacion.html">Documentación</a>.
+    </p>
+    <p>
+      La incorporación de servicios interoperables adicionales (teselas vectoriales,
+      catálogo federado y servicios OGC API) está prevista de manera progresiva y se
+      anunciará en esta misma página a medida que se implemente. La IDE no declara como
+      disponible ningún servicio que no lo esté.
+    </p>
+  </section>
+
+  <section class="seccion" id="politica-datos">
+    <h2>Política de datos</h2>
+    <p>
+      <strong>Acceso.</strong> Todos los conjuntos de datos publicados en esta IDE son de
+      acceso libre y gratuito. No se requiere registro, solicitud previa ni identificación
+      alguna para consultarlos o descargarlos.
+    </p>
+    <p>
+      <strong>Licencia y atribución.</strong> Los datos y sus metadatos se publican bajo
+      licencia
+      <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">Creative Commons Atribución 4.0 Internacional (CC BY 4.0)</a>.
+      Pueden copiarse, redistribuirse, transformarse y utilizarse con cualquier finalidad,
+      incluso comercial, con la única condición de citar la fuente en los términos que se
+      indican más abajo. El código de las herramientas y del geoportal se publica por
+      separado bajo licencia MIT.
+    </p>
+    <p>
+      <strong>Versiones y actualización.</strong> Cada conjunto de datos declara en el
+      catálogo su versión, su fecha de última modificación, su frecuencia de actualización
+      prevista y el área responsable de mantenerlo. La frecuencia declarada expresa un
+      compromiso de revisión, no una garantía de que el dato cambie en ese plazo. Cuando un
+      conjunto supere su período de revisión sin actualizarse, se indicará esa condición en
+      el catálogo antes que presentarlo como vigente.
+    </p>
+    <p>
+      <strong>Registro de cambios.</strong> El área lleva un registro interno de las
+      modificaciones de cada conjunto de datos.
+    </p>
+    <p>
+      <strong>Permanencia y retiro.</strong> Si un conjunto deja de mantenerse, se lo señala como discontinuado y se
+      conserva accesible la última versión publicada, indicando su fecha de corte. Los
+      identificadores no se reutilizan.
+    </p>
+    <p>
+      <strong>Limitación de responsabilidad.</strong> La información se publica con fines
+      informativos, de planificación y de consulta general. No tiene validez legal ni
+      constituye fuente dominial, catastral, de mensura ni de deslinde, y no sustituye la
+      documentación oficial que expiden los organismos competentes en cada materia. La
+      exactitud posicional y temática de cada conjunto es la que declaran sus metadatos. La
+      Municipalidad de Comodoro Rivadavia no se responsabiliza por el uso que terceros
+      hagan de estos datos, por las conclusiones derivadas de su interpretación, ni por
+      versiones alteradas o redistribuidas por fuera de este sitio.
+    </p>
+    <p>
+      <strong>Errores y observaciones.</strong> Se agradece el reporte de errores,
+      omisiones o inconsistencias. Toda observación recibida se evalúa junto al área
+      productora del conjunto y, cuando corresponde, se corrige en la siguiente versión.
+    </p>
+  </section>
+
+  <section class="seccion" id="datos-personales">
+    <h2>Datos personales</h2>
+    <p>
+      La IDE Comodoro no publica datos personales. Los conjuntos difundidos por este canal
+      describen elementos del territorio (límites, equipamiento, infraestructura,
+      instalaciones y unidades de análisis agregadas) y no contienen información que
+      permita identificar a personas físicas determinadas o determinables, en los términos
+      de la Ley Nacional N.º 25.326 de Protección de los Datos Personales.
+    </p>
+    <p>
+      Cuando un conjunto de datos de origen contiene información de carácter personal,
+      sensible o reservado, esa información se excluye antes de la publicación: el archivo
+      publicado es una versión depurada del original, y los atributos reservados no forman
+      parte de ninguna de las salidas difundidas. Los datos que por su naturaleza no pueden
+      hacerse públicos no se incorporan a esta IDE.
+    </p>
+    <p>
+      La información de contacto que figura en los metadatos corresponde a áreas y
+      funciones institucionales, no a personas a título individual.
+    </p>
+    <p>
+      Ante cualquier observación relativa al tratamiento de datos personales en la
+      información publicada, puede utilizarse el canal de contacto indicado más abajo.
+    </p>
+  </section>
+
+  <section class="seccion" id="citar">
+    <h2>Cómo citar estos datos</h2>
+    <p>
+      La licencia CC BY 4.0 exige citar la fuente. Se sugiere el siguiente formato, que
+      incluye los elementos necesarios para identificar de manera inequívoca la versión
+      utilizada:
+    </p>
+    <p class="cita-modelo">
+      Municipalidad de Comodoro Rivadavia. Departamento de Geoestadísticas.
+      <em>[Título del conjunto de datos]</em> [conjunto de datos]. Versión [versión].
+      Infraestructura de Datos Espaciales de Comodoro Rivadavia. [URL]
+      (consultado el [fecha de consulta]).
+    </p>
+    <p>Por ejemplo:</p>
+    <p class="cita-modelo">
+      Municipalidad de Comodoro Rivadavia. Departamento de Geoestadísticas.
+      <em>Límites de barrios</em> [conjunto de datos]. Versión 1.0.0. Infraestructura de
+      Datos Espaciales de Comodoro Rivadavia.
+      [URL del conjunto] (consultado el 28 de agosto de
+      2026).
+    </p>
+    <p>
+      El título, la versión y la fecha de actualización de cada conjunto figuran en su
+      ficha del <a href="datasets.html">catálogo</a> y en su archivo de metadatos. Si el
+      trabajo utiliza varios conjuntos, se recomienda citarlos individualmente antes que
+      referenciar el sitio en general.
+    </p>
+  </section>
+
+  <section class="seccion" id="contacto">
+    <h2>Contacto y canales</h2>
+    <p>
+      Todas las consultas relativas a esta Infraestructura de Datos Espaciales se reciben
+      en <a href="mailto:mit@comodoro.gov.ar">mit@comodoro.gov.ar</a>, correo institucional
+      de la Dirección General de Modernización e Investigación Territorial.
+    </p>
+    <p>Por ese canal pueden gestionarse:</p>
+    <ul>
+      <li>
+        <strong>Consultas sobre los datos publicados.</strong> Alcance, metodología,
+        vigencia o interpretación de un conjunto de datos.
+      </li>
+      <li>
+        <strong>Reporte de errores.</strong> Indicando el identificador del conjunto, la
+        versión consultada y, en lo posible, el elemento o los elementos afectados.
+      </li>
+      <li>
+        <strong>Solicitud de información no publicada.</strong> Pedidos de conjuntos de
+        datos que aún no forman parte del catálogo, que se evalúan junto con el área
+        productora correspondiente.
+      </li>
+      <li>
+        <strong>Propuestas de publicación.</strong> Para áreas del municipio y organismos
+        que deseen incorporar sus conjuntos de datos a esta IDE.
+      </li>
+      <li>
+        <strong>Cooperación técnica.</strong> Instituciones académicas, organismos
+        públicos y organizaciones interesadas en articular trabajo sobre información
+        geoespacial.
+      </li>
+    </ul>
+    <p>
+      Se procura responder toda consulta en un plazo razonable según su complejidad. Los
+      pedidos que requieran intervención de otras áreas pueden demandar plazos mayores, de
+      lo que se informa al solicitante.
+    </p>
+    <p>
+      Sitio oficial de la Municipalidad de Comodoro Rivadavia:
+      <a href="https://www.comodoro.gov.ar/" target="_blank" rel="noopener">comodoro.gov.ar</a>.
+    </p>
+  </section>
+
+  <section class="seccion" id="trayectoria">
+    <h2>Antecedentes y hoja de ruta</h2>
+    <p>
+      El Departamento de Geoestadísticas produce y sistematiza información geoespacial del
+      municipio desde hace varios años, con antecedentes de publicación de visores
+      temáticos y de cartografía de uso interno. Sobre esa base se construyó una secuencia
+      de trabajo deliberada: primero la gobernanza y los estándares, después la
+      automatización, y por último los servicios. La IDE es el resultado de esa secuencia.
+    </p>
+    <p>Hitos institucionales:</p>
+    <ul>
+      <li>Adhesión del municipio a IDERA (2021).</li>
+      <li>Convenio de cooperación con la Universidad Nacional de la Patagonia San Juan Bosco (2021)</li>
+      <li>Convenio de cooperación técnica con el Instituto Geográfico Nacional (2022).</li>
+      <li>Elaboración del proyecto de resolución municipal de creación de la IDE (2025).</li>
+      <li>Definición de la nomenclatura, el catálogo y el perfil de metadatos, y puesta en línea de este geoportal (2026).</li>
+    </ul>
+    <p>Líneas de trabajo en curso:</p>
+    <ul>
+      <li>
+        Incorporación progresiva de nuevos conjuntos de datos, en orden de disponibilidad
+        y de responsable asignado.
+      </li>
+      <li>
+        Ampliación de la documentación pública: nomenclatura, perfil de metadatos y guías
+        de uso.
+      </li>
+      <li>
+        Formalización normativa de la IDE y constitución del comité técnico
+        interdireccional.
+      </li>
+      <li>
+        Incorporación de servicios interoperables que permitan a otros organismos consumir
+        estos datos de manera automática.
+      </li>
+    </ul>
+    <p>
+      Los identificadores, el perfil de metadatos y las licencias se eligieron
+      deliberadamente para que cualquier otro nodo de datos espaciales pueda incorporar
+      este catálogo sin necesidad de acuerdos particulares ni de conversiones previas.
+    </p>
+  </section>
 
 </main>
 
