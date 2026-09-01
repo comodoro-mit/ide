@@ -46,17 +46,107 @@
     satelital: { color: "#ffd166", fillColor: "#ffd166" }
   };
 
-  /* Per layer override, optional. The neighbourhood boundaries are the base
-   * layer everything else sits on: a grey fill and a plain outline that flips
-   * with the base, so they frame the map without competing with it. Same three
-   * modes as TRAZOS. */
+  /* Per layer override, optional: a layer with no entry here falls back to
+   * TRAZOS and still draws. The point is thematic identity — a reader with
+   * three layers on at once should tell them apart without the legend.
+   *
+   * Boundaries are the base layer everything else sits on: grey fill, plain
+   * outline that flips with the base, so they frame the map without competing.
+   * Green for open space, orange for sport, purple for neighbourhood
+   * associations, red for health. `radio` is the point size, ignored by
+   * polygons. Same three modes as TRAZOS. */
   var TRAZOS_POR_CAPA = {
     "cr-adm-limites-barrios": {
       claro: { color: "#000", fillColor: "#808080", fillOpacity: .1 },
       oscuro: { color: "#fff", fillColor: "#808080", fillOpacity: .1 },
       satelital: { color: "#000", fillColor: "#808080", fillOpacity: .1 }
+    },
+    "cr-equ-espacios-verdes": {
+      claro: { color: "#1b5e20", fillColor: "#4caf50", fillOpacity: .38 },
+      oscuro: { color: "#a5d6a7", fillColor: "#66bb6a", fillOpacity: .38 },
+      satelital: { color: "#ccff90", fillColor: "#76ff03", fillOpacity: .30 }
+    },
+    "cr-equ-playones-deportivos": {
+      radio: 5,
+      claro: { color: "#7f3300", fillColor: "#f57c00", fillOpacity: .9 },
+      oscuro: { color: "#3a1c00", fillColor: "#ffa726", fillOpacity: .95 },
+      satelital: { color: "#ffffff", fillColor: "#ff9100", fillOpacity: .95 }
+    },
+    "cr-equ-asociaciones-vecinales": {
+      radio: 5,
+      claro: { color: "#3d0a58", fillColor: "#8e24aa", fillOpacity: .9 },
+      oscuro: { color: "#24042f", fillColor: "#ce93d8", fillOpacity: .95 },
+      satelital: { color: "#ffffff", fillColor: "#d500f9", fillOpacity: .95 }
+    },
+    "cr-sal-salud-publica": {
+      radio: 6,
+      claro: { color: "#6b0000", fillColor: "#e53935", fillOpacity: .9 },
+      oscuro: { color: "#360000", fillColor: "#ef5350", fillOpacity: .95 },
+      satelital: { color: "#ffffff", fillColor: "#ff1744", fillOpacity: .95 }
     }
   };
+
+  /* Sequential ramps, five classes, colour-blind safe (ColorBrewer). One per
+   * census theme so two choropleths on at once never read as the same map. */
+  var PALETAS = {
+    carencia: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+    densidad: ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"],
+    edad:     ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
+    vivienda: ["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"],
+    salud:    ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"]
+  };
+
+  /* Census tracts are not a category, they are a number: 325 identical
+   * polygons in one colour say nothing. Each of these is shaded by its own
+   * variable. `valor` derives it from the feature so the published fields stay
+   * as they are — a rate is computed here, not stored twice.
+   *
+   * The class breaks are NOT hard-coded: they are quintiles of the data as
+   * downloaded, so a master file updated tomorrow re-classes itself.
+   */
+  var COROPLETAS = {
+    "cr-cen-radios-nbi": {
+      etiqueta: "Hogares con NBI (%)",
+      paleta: PALETAS.carencia,
+      decimales: 1,
+      valor: function (p) {
+        return p.hogares > 0 ? (p.nbi_si / p.hogares) * 100 : null;
+      }
+    },
+    "cr-cen-radios-densidad-poblacion": {
+      etiqueta: "Densidad (hab/km²)",
+      paleta: PALETAS.densidad,
+      decimales: 0,
+      valor: function (p) { return p.densidad; }
+    },
+    "cr-cen-radios-edad-grupos": {
+      etiqueta: "Población de 65 años y más (%)",
+      paleta: PALETAS.edad,
+      decimales: 1,
+      valor: function (p) {
+        return p.pob_total > 0 ? (p.pob_65_mas / p.pob_total) * 100 : null;
+      }
+    },
+    "cr-cen-radios-densidad-viviendas": {
+      etiqueta: "Densidad de viviendas (viv/km²)",
+      paleta: PALETAS.vivienda,
+      decimales: 0,
+      valor: function (p) { return p.dens_viv; }
+    },
+    "cr-cen-radios-cobertura-salud": {
+      etiqueta: "Sin cobertura de salud (%)",
+      paleta: PALETAS.salud,
+      decimales: 0,
+      valor: function (p) { return p.porc_sin; }
+    }
+  };
+
+  // A tract with no value is not a zero: it gets its own neutral grey.
+  var SIN_DATO = { claro: "#d9d9d9", oscuro: "#4a4a4a", satelital: "#bdbdbd" };
+
+  // Hairline between tracts. The ramp carries the meaning; the outline only
+  // has to keep 325 polygons from melting into one blob.
+  var BORDE_CORO = { claro: "#6b6b6b", oscuro: "#dcdcdc", satelital: "#ffffff" };
 
   // The opening view is the whole city and it stays put. Turning a layer on
   // never re-frames the map: only the user moves it, by panning, zooming, or
@@ -99,6 +189,8 @@
     var lienzo = contenedor.parentNode;
     if (lienzo) lienzo.classList.toggle("oscuro", modo !== "claro");
     repintarCapas(TRAZOS[modo]);
+    // The swatches follow the layer colours, which follow the base map.
+    if (typeof dibujarLeyenda === "function") dibujarLeyenda();
   }
 
   // --- popups
@@ -194,16 +286,78 @@
 
 
   var cargadas = {};
+  var cortes = {};     // id -> class breaks, computed once from the data
+  var espunto = {};    // id -> the layer draws points
+  var titulos = {};    // id -> the label shown in the panel
 
+  /* Quintiles, not equal intervals: density runs from 0.09 to 47500 hab/km²
+   * and equal intervals would put 320 of the 325 tracts in the first class.
+   * Quintiles guarantee every colour is used and the map stays readable
+   * whatever the distribution looks like after the next update.
+   */
+  function calcularCortes(idCapa, datos) {
+    var conf = COROPLETAS[idCapa];
+    if (!conf) return;
+    var valores = (datos.features || []).map(function (rasgo) {
+      return conf.valor(rasgo.properties || {});
+    }).filter(function (v) {
+      return typeof v === "number" && isFinite(v);
+    }).sort(function (a, b) { return a - b; });
+
+    if (!valores.length) return;
+
+    var quiebres = [];
+    for (var i = 1; i < conf.paleta.length; i++) {
+      quiebres.push(valores[Math.floor(valores.length * i / conf.paleta.length)]);
+    }
+    cortes[idCapa] = {
+      quiebres: quiebres,
+      min: valores[0],
+      max: valores[valores.length - 1]
+    };
+  }
+
+  // -1 means no value: the feature is drawn in SIN_DATO, never in class 0.
+  function clase(idCapa, valor) {
+    var c = cortes[idCapa];
+    if (!c || typeof valor !== "number" || !isFinite(valor)) return -1;
+    var i = 0;
+    while (i < c.quiebres.length && valor >= c.quiebres[i]) i++;
+    return i;
+  }
+
+  /* Returns either a plain style object or, for a choropleth, the per feature
+   * function Leaflet accepts in the same slot. `setStyle` takes both, so the
+   * mode switch repaints graduated and flat layers through one code path.
+   */
   function estilo(trazo, idCapa) {
+    var modo = modoActual();
+    var conf = COROPLETAS[idCapa];
+
+    if (conf) {
+      return function (rasgo) {
+        var i = clase(idCapa, conf.valor((rasgo && rasgo.properties) || {}));
+        return {
+          color: BORDE_CORO[modo],
+          weight: .6,
+          opacity: .85,
+          fillColor: i < 0 ? SIN_DATO[modo] : conf.paleta[i],
+          fillOpacity: modo === "satelital" ? .72 : .8
+        };
+      };
+    }
+
     var porCapa = TRAZOS_POR_CAPA[idCapa];
-    var propio = porCapa && porCapa[modoActual()];
+    var propio = (porCapa && porCapa[modo]) || {};
     return {
-      color: (propio && propio.color) || trazo.color,
+      color: propio.color || trazo.color,
       weight: 1.5,
       opacity: .95,
-      fillColor: (propio && propio.fillColor) || trazo.fillColor,
-      fillOpacity: propio && propio.fillOpacity !== undefined ? propio.fillOpacity : .25
+      fillColor: propio.fillColor || trazo.fillColor,
+      fillOpacity: propio.fillOpacity !== undefined ? propio.fillOpacity : .25,
+      // Ignored by polygons; CircleMarker.setStyle reads it, so points keep
+      // their size when the base map flips.
+      radius: (porCapa && porCapa.radio) || 4
     };
   }
 
@@ -213,11 +367,24 @@
     });
   }
 
+  /* Order in the overlay pane is order of arrival, which is whatever the user
+   * clicked first: a choropleth switched on last would bury the points drawn
+   * under it. Filled areas sink, points rise, whatever the click order was.
+   */
+  function ordenar(idCapa) {
+    var capa = cargadas[idCapa];
+    if (!capa) return;
+    if (espunto[idCapa]) capa.bringToFront();
+    else capa.bringToBack();
+  }
+
   function encender(entrada) {
     var id = entrada.value;
 
     if (cargadas[id]) {
       cargadas[id].addTo(mapa);
+      ordenar(id);
+      dibujarLeyenda();
       return;
     }
 
@@ -231,6 +398,11 @@
         var trazo = TRAZOS[modoActual()];
         var etiqueta = fila ? fila.querySelector("span") : null;
         var titulo = etiqueta ? etiqueta.textContent.trim() : id;
+        titulos[id] = titulo;
+        var primera = (datos.features || [])[0];
+        espunto[id] = !!(primera && primera.geometry &&
+                         primera.geometry.type.indexOf("Point") !== -1);
+        calcularCortes(id, datos);
         var capa = L.geoJSON(datos, {
           style: estilo(trazo, id),
           onEachFeature: function (rasgo, sector) {
@@ -238,19 +410,19 @@
               return popupHtml(rasgo.properties, titulo, id);
             }, { maxWidth: 320, minWidth: 200 });
           },
+          // Bare marker: `style` above is applied to it by resetStyle, so the
+          // colours live in one place instead of two that drift apart.
           pointToLayer: function (_, punto) {
-            return L.circleMarker(punto, {
-              radius: 4,
-              color: trazo.color,
-              weight: 1.5,
-              fillColor: trazo.fillColor,
-              fillOpacity: .8
-            });
+            return L.circleMarker(punto);
           }
         });
         cargadas[id] = capa;
         // The user may have unchecked it while it was downloading.
-        if (entrada.checked) capa.addTo(mapa);
+        if (entrada.checked) {
+          capa.addTo(mapa);
+          ordenar(id);
+        }
+        dibujarLeyenda();
       })
       .catch(function () {
         entrada.checked = false;
@@ -264,6 +436,80 @@
 
   function apagar(id) {
     if (cargadas[id]) mapa.removeLayer(cargadas[id]);
+    dibujarLeyenda();
+  }
+
+  // --- legend
+
+  /* Built here, not in visor.html: it only ever describes layers that are on,
+   * so with nothing checked there is nothing to mark up. It lists the active
+   * layers in panel order, ramp for the graduated ones and a single swatch for
+   * the rest, and it is rebuilt on every toggle and on every base map change.
+   */
+  var lienzoLeyenda = contenedor.parentNode;
+  var leyenda = document.createElement("div");
+  leyenda.className = "ctrl leyenda";
+  leyenda.id = "leyenda";
+  leyenda.hidden = true;
+  if (lienzoLeyenda) lienzoLeyenda.appendChild(leyenda);
+
+  function numero(valor, decimales) {
+    return Number(valor).toLocaleString("es-AR", {
+      minimumFractionDigits: decimales,
+      maximumFractionDigits: decimales
+    });
+  }
+
+  function bloqueRampa(id) {
+    var conf = COROPLETAS[id];
+    var c = cortes[id];
+    if (!c) return "";
+    var dec = conf.decimales;
+    var ultima = conf.paleta.length - 1;
+
+    var filas = conf.paleta.map(function (color, i) {
+      var desde = i === 0 ? c.min : c.quiebres[i - 1];
+      var hasta = i === ultima ? c.max : c.quiebres[i];
+      return '<li><i style="background:' + color + '"></i>' +
+             numero(desde, dec) + " – " + numero(hasta, dec) + "</li>";
+    });
+
+    return '<div class="leyenda-capa">' +
+           "<p>" + escapar(conf.etiqueta) + "</p>" +
+           '<ul class="leyenda-rampa">' + filas.join("") + "</ul></div>";
+  }
+
+  function bloqueSimple(id) {
+    var trazo = TRAZOS[modoActual()];
+    var e = estilo(trazo, id);
+    var forma = espunto[id] ? "punto" : "area";
+    return '<div class="leyenda-capa"><p>' +
+           '<i class="muestra ' + forma + '" style="background:' + e.fillColor +
+           ";border-color:" + e.color + '"></i>' +
+           escapar(titulos[id] || id) + "</p></div>";
+  }
+
+  /* Panel order, not load order: `cargadas` is keyed in the order the fetches
+   * came back, so the legend would shuffle itself on a slow connection. */
+  function ordenPanel(id) {
+    var entrada = document.querySelector('.capa input[value="' + id + '"]');
+    if (!entrada) return 999;
+    return Array.prototype.indexOf.call(
+      document.querySelectorAll('.capa input[type="checkbox"]'), entrada);
+  }
+
+  function dibujarLeyenda() {
+    if (!leyenda) return;
+    var bloques = Object.keys(cargadas).filter(function (id) {
+      return mapa.hasLayer(cargadas[id]);
+    }).sort(function (a, b) {
+      return ordenPanel(a) - ordenPanel(b);
+    }).map(function (id) {
+      return COROPLETAS[id] ? bloqueRampa(id) : bloqueSimple(id);
+    }).filter(Boolean);
+
+    leyenda.innerHTML = bloques.join("");
+    leyenda.hidden = !bloques.length;
   }
 
   // --- controls

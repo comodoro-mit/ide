@@ -692,6 +692,72 @@ main::before {
   .ctrl button:active { transform: none; }
 }
 
+/* --- map legend --- */
+/* Same glass shell as the other floating controls. It is only in the DOM with
+   at least one layer on, so it never sits empty over the map. */
+
+.leyenda {
+  right: .75rem;
+  bottom: 1.6rem;
+  max-width: 13rem;
+  max-height: calc(100% - 5rem);
+  padding: .55rem .7rem;
+  overflow-y: auto;
+  gap: .55rem;
+  font-size: .75rem;
+  line-height: 1.35;
+  color: var(--vidrio-tinta);
+}
+
+.leyenda-capa p {
+  display: flex;
+  gap: .4rem;
+  align-items: center;
+  margin: 0 0 .3rem;
+  font-weight: 600;
+}
+
+.leyenda-capa:last-child p:last-child { margin-bottom: 0; }
+
+/* Ramp classes: the swatch column lines up, the labels read as a range. */
+.leyenda-rampa {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leyenda-rampa li {
+  display: flex;
+  gap: .4rem;
+  align-items: center;
+  color: var(--vidrio-apagado);
+  font-variant-numeric: tabular-nums;
+}
+
+.leyenda-rampa i {
+  flex: none;
+  width: 14px;
+  height: 11px;
+  border: 1px solid var(--vidrio-lavado);
+  border-radius: 2px;
+}
+
+/* Flat layers get one swatch, shaped like the geometry it stands for: a
+   rounded box for an area, a dot for a point. */
+.leyenda .muestra {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid;
+  border-radius: 3px;
+}
+
+.leyenda .muestra.punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 .creditos {
   margin: 0 0 2rem;
   font-size: .6875rem;
