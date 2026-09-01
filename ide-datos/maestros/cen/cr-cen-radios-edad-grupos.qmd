@@ -1,0 +1,58 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.40.5-Bratislava">
+  <identifier>cr-cen-radios-edad-grupos</identifier>
+  <parentidentifier></parentidentifier>
+  <language>SPA</language>
+  <type>dataset</type>
+  <title>Edad en grandes grupos por radio censal</title>
+  <abstract>Edad en grandes grupos por radio censal en Comodoro Rivadavia, Chubut, Argentina.</abstract>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>Sociedad</keyword>
+  </keywords>
+  <contact>
+    <contactAddress>
+      <type>postal</type>
+      <address>Manuel Belgrano 965</address>
+      <city>Comodoro Rivadavia</city>
+      <administrativearea>Chubut</administrativearea>
+      <postalcode>9000</postalcode>
+      <country>Argentina</country>
+    </contactAddress>
+    <name>Dirección General de Modernización e Investigación Territorial</name>
+    <organization>Municipalidad de Comodoro Rivadavia</organization>
+    <position>Geoestadísticas</position>
+    <voice></voice>
+    <fax></fax>
+    <email>mit@comodoro.gov.ar</email>
+    <role>owner</role>
+  </contact>
+  <links>
+    <link name="Mi ciudad" description="" mimeType="" type="https" url="comodoro.gov.ar/miciudad" size="" format=""/>
+  </links>
+  <dates/>
+  <fees></fees>
+  <license>Creative Commons Attribution 4.0</license>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt>PROJCRS["POSGAR 2007 / Argentina 2",BASEGEOGCRS["POSGAR 2007",DATUM["Posiciones Geodesicas Argentinas 2007",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",5340]],CONVERSION["Argentina zone 2",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",-90,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-69,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",1,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",2500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Argentina - between 70°30'W and 67°30'W, onshore."],BBOX[-54.9,-70.5,-24.08,-67.49]],ID["EPSG",5344]]</wkt>
+      <proj4>+proj=tmerc +lat_0=-90 +lon_0=-69 +k=1 +x_0=2500000 +y_0=0 +ellps=WGS84 +units=m +no_defs</proj4>
+      <srsid>28114</srsid>
+      <srid>5344</srid>
+      <authid>EPSG:5344</authid>
+      <description>POSGAR 2007 / Argentina 2</description>
+      <projectionacronym>tmerc</projectionacronym>
+      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial maxy="4935119.15679999999701977" maxx="2627147.32239999994635582" dimensions="2" minx="2594587.58650000020861626" miny="4904935.66430000029504299" minz="0" maxz="0" crs="EPSG:5344"/>
+    <temporal>
+      <period>
+        <start></start>
+        <end></end>
+      </period>
+    </temporal>
+  </extent>
+</qgis>
